@@ -16,7 +16,11 @@ function createCube(color=0x00ff00, wireframe=false, x=0, y=0, z=0, ) {
     cube.y = y
     cube.z = z
     return cube
-} 
+}
+
+function loadCATrajectory() {
+    
+}
 
 const scene = new THREE.Scene()
 
@@ -69,8 +73,9 @@ function animate() {
   requestAnimationFrame(animate)
 
   stats.begin()
-  cubeInstance.rotation.x += 0.01
-  cubeInstance.rotation.y += 0.01
+  cubeInstance.rotation.x += 0.001
+
+  cubeInstance.rotation.y += 0.001
   stats.end()
 
   render()
