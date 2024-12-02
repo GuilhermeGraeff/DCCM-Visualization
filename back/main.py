@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-import MDAnalysis as mda
 from transformData import dataTranformer
 
 app = FastAPI()
@@ -10,8 +9,7 @@ def home():
 
 
 @app.get("/get1AKI")
-def pegar_algo():
+def get1AKI():
     dataTransformer = dataTranformer()
-    u = mda.Universe('/data/1AKI.pdb')
-    result = dataTransformer.misc.templateFunction(1,10)
-    return result
+    resultMatrix = dataTransformer.algs.matrixFromPDB('./data/1AKI.pdb')
+    return resultMatrix
