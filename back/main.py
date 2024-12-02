@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from transformData import dataTranformer
+
+# from transformData import dataTranformer
 
 app = FastAPI()
 
@@ -9,7 +10,8 @@ def home():
 
 
 @app.get("/get1AKI")
-def get1AKI():
-    dataTransformer = dataTranformer()
-    resultMatrix = dataTransformer.algs.matrixFromPDB('./data/1AKI.pdb')
-    return resultMatrix
+def pegar_algo():
+    # dataTransformer = dataTranformer()
+    
+    # result = dataTransformer.misc.templateFunction(1,10)
+    return 'xesquedele'

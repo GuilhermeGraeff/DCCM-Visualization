@@ -57,15 +57,28 @@ class Algorithms:
                             array_all_structure.append(atom.coord)
             array_all_trajectory.append(array_all_structure)
             a += 1
-        for b in array_all_trajectory:
-            print(b)
         return array_all_trajectory
+    
+    def writeNakedArray(self, coords):
+        with open("./data/output.txt", "w") as txt_file:
+            txt_file.write("[")
+            for line in range(0, len(coords), 1):
+                txt_file.write("[")
+                for single_cord in range(0, len(coords[line]), 1):
+                    txt_file.write(''.join(coords[line][single_cord].tostring()).join(f'{"" if single_cord == (len(coords[line]) - 1) else ","}'))
+                if line != (len(coords) - 1):
+                    txt_file.write("]")
+                else:
+                    txt_file.write("],")
+            txt_file.write("]")
 
-
+# meuArray = np.array(array_all_trajectory)
+# tararan vs a transposta
 
 def main() -> int:
     app = dataTranformer()
     coords = app.algs.matrixFromPDB("./data/1AKI.pdb")
+    app.algs.writeNakedArray(coords)
     return 0
 
 

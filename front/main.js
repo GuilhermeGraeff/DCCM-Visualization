@@ -73,7 +73,7 @@ function animate() {
   requestAnimationFrame(animate)
 
   stats.begin()
-  cubeInstance.rotation.x += 0.001
+  cubeInstance.rotation.x += 0.1
 
   cubeInstance.rotation.y += 0.001
   stats.end()
