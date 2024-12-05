@@ -44,19 +44,20 @@ class Algorithms:
     def matrixFromPDB(self, pdb_file_handle):
         array_all_trajectory = []
         a = 1
-        for i in self.PDB_parse(pdb_file_handle):
-            print(a)
-            if a > 10:
-                break
+        models = self.PDB_parse(pdb_file_handle)
+        print(np.array(models).shape)
+
+        structure = self.parser.get_structure("1aki", pdb_file_handle)
+
+        for model in structure:
             array_all_structure = []
-            structure = self.parser.get_structure("1aki", pdb_file_handle)
-            for model in structure:
-                for chain in model:
-                    for residue in chain:
-                        for atom in residue:
-                            array_all_structure.append(atom.coord)
+            for chain in model:
+                for residue in chain:
+                    for atom in residue:
+                        array_all_structure.append(atom.coord)
             array_all_trajectory.append(array_all_structure)
-            a += 1
+
+        print(np.array(array_all_structure).shape)
         return array_all_trajectory
     
     def writeNakedArray(self, coords):
@@ -65,12 +66,31 @@ class Algorithms:
             for line in range(0, len(coords), 1):
                 txt_file.write("[")
                 for single_cord in range(0, len(coords[line]), 1):
-                    txt_file.write(''.join(coords[line][single_cord].tostring()).join(f'{"" if single_cord == (len(coords[line]) - 1) else ","}'))
+                    txt_file.write(f"{coords[line][single_cord]}{'' if single_cord == (len(coords[line]) - 1) else ','}")
                 if line != (len(coords) - 1):
-                    txt_file.write("]")
+                    txt_file.write("]\n")
                 else:
                     txt_file.write("],")
-            txt_file.write("]")
+            txt_file.write("]\n")
+
+    def divDotPdctByPdctOfPowSqrtRoots(self, a, b):
+        result = np.zeros((a.shape[0], b.shape[1]))
+        for i in range(a.shape[0]):
+            for j in range(b.shape[1]):
+                result[i][j] = self.operateBewteenTwoVectors(a[i], np.array([b[0][j], b[1][j], b[2][j]]))
+        return result
+
+
+    def operateBewteenTwoVectors(self, a, b):
+        # print(a, b)
+        dot_product = np.dot(a, b)
+        sqrt_a = np.sqrt(np.power(a, 2))
+        sqrt_b = np.sqrt(np.power(b, 2))
+        numerator = dot_product
+        denominator = sum(sqrt_a) * sum(sqrt_b)
+        result = numerator / denominator
+        return result
+
 
 # meuArray = np.array(array_all_trajectory)
 # tararan vs a transposta
@@ -78,7 +98,15 @@ class Algorithms:
 def main() -> int:
     app = dataTranformer()
     coords = app.algs.matrixFromPDB("./data/1AKI.pdb")
-    app.algs.writeNakedArray(coords)
+    
+    covariance_of_one_frame = app.algs.divDotPdctByPdctOfPowSqrtRoots(np.array(coords[0]), np.transpose(np.array(coords[0])))
+    print("One frame cross correlation")
+    for i in covariance_of_one_frame:
+        print("\n")
+        for j in i:
+            print(j, end=" ")
+
+    # app.algs.writeNakedArray(coords)
     return 0
 
 
