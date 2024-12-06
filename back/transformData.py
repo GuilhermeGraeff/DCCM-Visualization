@@ -5,6 +5,9 @@ import numpy as np
 from Bio.PDB.PDBParser import PDBParser
 import numpy , tempfile ,os , re
 
+import matplotlib.pyplot as plt
+import numpy as np
+
 class dataTranformer:
     def __init__(self):
         # print('Program starting up.')
@@ -60,8 +63,8 @@ class Algorithms:
         print(np.array(array_all_structure).shape)
         return array_all_trajectory
     
-    def writeNakedArray(self, coords):
-        with open("./data/output.txt", "w") as txt_file:
+    def writeNakedArray(self, coords, file_path):
+        with open(file_path, "w") as txt_file:
             txt_file.write("[")
             for line in range(0, len(coords), 1):
                 txt_file.write("[")
@@ -72,6 +75,20 @@ class Algorithms:
                 else:
                     txt_file.write("],")
             txt_file.write("]\n")
+
+
+    def getFullDeltaFromMatrix(self, trajectory):
+        deltaMatrixTrajectory = []
+        #len() usage adjustment and delta adjustment, -1 -1
+        for i in range(0,len(trajectory)-1-1,1):
+            deltaFrame = self.getDeltaFromOneToOneFrame(trajectory[i], trajectory[i+1])
+            deltaMatrixTrajectory.append(deltaFrame)
+
+        return deltaMatrixTrajectory
+    
+    def getDeltaFromOneToOneFrame(self, reference_frame, next_frame):
+        deltaMatrix = np.subtract(next_frame, reference_frame)
+        return deltaMatrix
 
     def divDotPdctByPdctOfPowSqrtRoots(self, a, b):
         result = np.zeros((a.shape[0], b.shape[1]))
@@ -97,16 +114,27 @@ class Algorithms:
 
 def main() -> int:
     app = dataTranformer()
-    coords = app.algs.matrixFromPDB("./data/1AKI.pdb")
-    
-    covariance_of_one_frame = app.algs.divDotPdctByPdctOfPowSqrtRoots(np.array(coords[0]), np.transpose(np.array(coords[0])))
-    print("One frame cross correlation")
-    for i in covariance_of_one_frame:
-        print("\n")
-        for j in i:
-            print(j, end=" ")
 
-    # app.algs.writeNakedArray(coords)
+    coords = app.algs.matrixFromPDB("./data/1AKI.pdb")
+
+    app.algs.writeNakedArray(coords, "./data/output.txt")
+
+    deltas = app.algs.getFullDeltaFromMatrix(coords)
+    
+    covariance_of_one_frame = app.algs.divDotPdctByPdctOfPowSqrtRoots(np.array(deltas[0]), np.transpose(np.array(deltas[0])))
+
+    print(covariance_of_one_frame)
+
+    # This step have to been taken after the matrix subtraction (delta in betweeen coordinates)
+    # covariance_of_one_frame = app.algs.divDotPdctByPdctOfPowSqrtRoots(np.array(coords[0]), np.transpose(np.array(coords[0])))
+    print("One frame cross correlation")
+    # for i in covariance_of_one_frame:
+    #     print("\n")
+    #     for j in i:
+    #         print(j, end=" ")
+
+    plt.imshow(covariance_of_one_frame, cmap='hot', interpolation='nearest')
+    plt.show()
     return 0
 
 
