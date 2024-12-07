@@ -46,7 +46,6 @@ class Algorithms:
 
     def matrixFromPDB(self, pdb_file_handle):
         array_all_trajectory = []
-        a = 1
         models = self.PDB_parse(pdb_file_handle)
         print(np.array(models).shape)
 
@@ -90,6 +89,15 @@ class Algorithms:
         deltaMatrix = np.subtract(next_frame, reference_frame)
         return deltaMatrix
 
+    def getFullCovariancesFromDeltas(self, deltas):
+        covariances = []
+        aux = 0
+        for i in deltas:
+            print(aux)
+            aux += 1
+            covariances.append(self.divDotPdctByPdctOfPowSqrtRoots(np.array(i), np.transpose(np.array(i))))
+        return covariances
+
     def divDotPdctByPdctOfPowSqrtRoots(self, a, b):
         result = np.zeros((a.shape[0], b.shape[1]))
         for i in range(a.shape[0]):
@@ -114,27 +122,21 @@ class Algorithms:
 
 def main() -> int:
     app = dataTranformer()
-
+    
     coords = app.algs.matrixFromPDB("./data/1AKI.pdb")
-
+    
     app.algs.writeNakedArray(coords, "./data/output.txt")
 
     deltas = app.algs.getFullDeltaFromMatrix(coords)
     
-    covariance_of_one_frame = app.algs.divDotPdctByPdctOfPowSqrtRoots(np.array(deltas[0]), np.transpose(np.array(deltas[0])))
+    covariances = app.algs.getFullCovariancesFromDeltas(deltas)
 
-    print(covariance_of_one_frame)
+    aux = 1
+    for i in covariances:    
+        plt.imshow(i, cmap='hot', interpolation='nearest', aspect='auto')
+        plt.savefig(f'./data/frames/cov_3c_frame_{aux}.png')
+        aux += 1
 
-    # This step have to been taken after the matrix subtraction (delta in betweeen coordinates)
-    # covariance_of_one_frame = app.algs.divDotPdctByPdctOfPowSqrtRoots(np.array(coords[0]), np.transpose(np.array(coords[0])))
-    print("One frame cross correlation")
-    # for i in covariance_of_one_frame:
-    #     print("\n")
-    #     for j in i:
-    #         print(j, end=" ")
-
-    plt.imshow(covariance_of_one_frame, cmap='hot', interpolation='nearest')
-    plt.show()
     return 0
 
 
