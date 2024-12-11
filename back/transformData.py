@@ -124,18 +124,25 @@ class Algorithms:
         aux_rest = len(covariances) % n_frames_per_slice
 
         mean_sliced_covariances = None
+        is_first_pass = True
 
-        for i in range(0, n_slices, n_frames_per_slice):
-            if i == n_slices:
+        for i in range(0, n_slices, 1):
+            if i == n_slices - 1:
                 if aux_rest > 0:
-                    np.concatenate([mean_sliced_covariances, covariances[i:]])
+                    mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):])]])
             else:
-                if mean_sliced_covariances == None:
-                    np.concatenate([mean_sliced_covariances, covariances[i:i+n_frames_per_slice]])
+                if is_first_pass:
+                    mean_sliced_covariances = [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):((i*n_frames_per_slice)+n_frames_per_slice)])]
                 else:
-                    mean_sliced_covariances = [covariances[i:i+n_frames_per_slice]]
-
+                    mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):((i*n_frames_per_slice)+n_frames_per_slice)])]])
+            is_first_pass = False
         return mean_sliced_covariances
+
+    def getAverageFromSlice(self, _slice):
+        average = _slice[0]
+        for i in _slice[1:]:
+            average = np.add(average, i)
+        return average/len(_slice)
 
 def main() -> int:
     app = dataTranformer()
@@ -180,8 +187,8 @@ def main() -> int:
                     [244, 245, 246], [247, 248, 249], [250, 251, 252]],              
                   ])
 
-    for i in a:
-       print(i)
+    # for i in a:
+    #    print(i)
 
     mean_sliced_covariances = app.algs.getAverageSlicesFromCovariances(a, 3)
 
