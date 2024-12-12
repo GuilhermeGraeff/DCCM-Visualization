@@ -1,13 +1,14 @@
 import sys
 import random
 import MDAnalysis as mda
-import numpy as np
 from Bio.PDB.PDBParser import PDBParser
-import numpy , tempfile ,os , re
+import tempfile ,os , re
 
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import json
+from progress.bar import Bar
 
 class dataTranformer:
     def __init__(self):
@@ -48,41 +49,48 @@ class Algorithms:
     def matrixFromPDB(self, pdb_file_handle):
         array_all_trajectory = []
         models = self.PDB_parse(pdb_file_handle)
-        print(np.array(models).shape)
 
         structure = self.parser.get_structure("1aki", pdb_file_handle)
 
-        for model in structure:
-            array_all_structure = []
-            for chain in model:
-                for residue in chain:
-                    for atom in residue:
-                        array_all_structure.append(atom.coord)
-            array_all_trajectory.append(array_all_structure)
+        with Bar('matrixFromPDB()...') as bar:
+            for model in structure:
+                array_all_structure = []
+                for chain in model:
+                    for residue in chain:
+                        for atom in residue:
+                            array_all_structure.append(atom.coord)
+                array_all_trajectory.append(array_all_structure)
+                bar.next()
 
-        print(np.array(array_all_structure).shape)
         return array_all_trajectory
     
-    def writeNakedArray(self, coords, file_path):
+    def writeNakedArrayCoords(self, coords, file_path):
         with open(file_path, "w") as txt_file:
             txt_file.write("[")
-            for line in range(0, len(coords), 1):
-                txt_file.write("[")
-                for single_cord in range(0, len(coords[line]), 1):
-                    txt_file.write(f"{coords[line][single_cord]}{'' if single_cord == (len(coords[line]) - 1) else ','}")
-                if line != (len(coords) - 1):
-                    txt_file.write("]\n")
-                else:
-                    txt_file.write("],")
-            txt_file.write("]\n")
+            with Bar('writeNakedArrayCoords()...') as bar:
+                for line in range(0, len(coords), 1):
+                    txt_file.write("[")
+                    for single_cord in range(0, len(coords[line]), 1):
+                        txt_file.write(f"{coords[line][single_cord]}{'' if single_cord == (len(coords[line]) - 1) else ','}")
+                    if line != (len(coords) - 1):
+                        txt_file.write("]\n")
+                    else:
+                        txt_file.write("],")
+                    bar.next()
+                txt_file.write("]\n")
 
+    # def writeNakedArrayToJson(self, coords, file_path):
+    #     with open(file_path, 'wb') as outfile:
+    #         json.dump(coords, outfile)
 
     def getFullDeltaFromMatrix(self, trajectory):
         deltaMatrixTrajectory = []
         #len() usage adjustment and delta adjustment, -1 -1
-        for i in range(0,len(trajectory)-1-1,1):
-            deltaFrame = self.getDeltaFromOneToOneFrame(trajectory[i], trajectory[i+1])
-            deltaMatrixTrajectory.append(deltaFrame)
+        with Bar('getFullDeltaFromMatrix()...') as bar:
+            for i in range(0,len(trajectory)-1-1,1):
+                deltaFrame = self.getDeltaFromOneToOneFrame(trajectory[i], trajectory[i+1])
+                deltaMatrixTrajectory.append(deltaFrame)
+                bar.next()
 
         return deltaMatrixTrajectory
     
@@ -93,10 +101,11 @@ class Algorithms:
     def getFullCovariancesFromDeltas(self, deltas):
         covariances = []
         aux = 0
-        for i in deltas:
-            print(aux)
-            aux += 1
-            covariances.append(self.divDotPdctByPdctOfPowSqrtRoots(np.array(i), np.transpose(np.array(i))))
+        with Bar('getFullCovariancesFromDeltas()...') as bar:
+            for i in deltas:
+                aux += 1
+                covariances.append(self.divDotPdctByPdctOfPowSqrtRoots(np.array(i), np.transpose(np.array(i))))
+                bar.next()
         return covariances
 
     def divDotPdctByPdctOfPowSqrtRoots(self, a, b):
@@ -126,16 +135,18 @@ class Algorithms:
         mean_sliced_covariances = None
         is_first_pass = True
 
-        for i in range(0, n_slices, 1):
-            if i == n_slices - 1:
-                if aux_rest > 0:
-                    mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):])]])
-            else:
-                if is_first_pass:
-                    mean_sliced_covariances = [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):((i*n_frames_per_slice)+n_frames_per_slice)])]
+        with Bar('getFullCovariancesFromDeltas()...') as bar:
+            for i in range(0, n_slices, 1):
+                if i == n_slices - 1:
+                    if aux_rest > 0:
+                        mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):])]])
                 else:
-                    mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):((i*n_frames_per_slice)+n_frames_per_slice)])]])
-            is_first_pass = False
+                    if is_first_pass:
+                        mean_sliced_covariances = [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):((i*n_frames_per_slice)+n_frames_per_slice)])]
+                    else:
+                        mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):((i*n_frames_per_slice)+n_frames_per_slice)])]])
+                is_first_pass = False
+                bar.next()
         return mean_sliced_covariances
 
     def getAverageFromSlice(self, _slice):
@@ -144,26 +155,41 @@ class Algorithms:
             average = np.add(average, i)
         return average/len(_slice)
 
+    def writeNakedArrayCovariances(self, covariances, file_path):
+        with open(file_path, "w") as txt_file:
+            txt_file.write("[")
+            with Bar('writeNakedArrayCovariances()...') as bar:
+                for frame in range(0, len(covariances), 1):
+                    txt_file.write("[")
+                    for line in range(0, len(covariances[frame]), 1):
+                        for residue in range(0, len(covariances[frame][line]), 1):
+                            txt_file.write(f"{covariances[frame][line][residue]}{', ' if residue == (len(covariances[frame][line]) - 1) else '],'}")
+                        bar.next()
+                    txt_file.write("],\n")
+                txt_file.write("]\n")
+
 def main() -> int:
     app = dataTranformer()
     
     coords = app.algs.matrixFromPDB("./data/1AKI.pdb")
     
-    app.algs.writeNakedArray(coords, "./data/output.txt")
+    app.algs.writeNakedArrayCoords(coords, "./data/output.txt")
 
     deltas = app.algs.getFullDeltaFromMatrix(coords)
     
     covariances = app.algs.getFullCovariancesFromDeltas(deltas)
 
-    mean_sliced_covariances = app.algs.getAverageSlicesFromCovariances(covariances, 10)
-
+    mean_sliced_covariances = app.algs.getAverageSlicesFromCovariances(covariances, 5)
 
     aux = 0
-    for i in mean_sliced_covariances:    
-        plt.imshow(i, cmap='hot', interpolation='nearest', aspect='auto')
-        plt.savefig(f'./data/frames/cov_3c_frame_{aux}.png')
-        aux += 1
+    with Bar('generate images...') as bar:
+        for i in mean_sliced_covariances:
+            plt.imshow(i, cmap='seismic', interpolation='nearest', aspect='auto', origin='lower')
+            plt.savefig(f'./data/frames/cov_3c_frame_{aux}.png')
+            aux += 1
+            bar.next()
 
+    app.algs.writeNakedArrayCovariances(mean_sliced_covariances, "./data/json_output.txt")
     return 0
 
 # meuArray = np.array(array_all_trajectory)
