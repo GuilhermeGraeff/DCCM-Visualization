@@ -3,6 +3,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import { GUI } from 'dat.gui'
 
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { TTFLoader } from 'three/examples/jsm/loaders/TTFLoader.js'
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
+
+import myArray from './data/MscOutputArray.js'
 
 // Funções relacionadas a cena 
 
@@ -58,10 +63,56 @@ document.body.appendChild(stats.dom)
   // Ler Matriz DCCM
 
 
-  // Pontos
-  
+function gradientColorForCorrelation(value) {
+  const blue = { r: 0, g: 0, b: 255 };   // Azul
+  const white = { r: 255, g: 255, b: 255 }; // Branco
+  const red = { r: 255, g: 0, b: 0 };    // Vermelho
 
-  // linhas
+  let resultColor;
+
+  if (value < 0) {
+    const t = (value + 1); 
+    resultColor = {
+      r: Math.round(blue.r * (1 - t) + white.r * t),
+      g: Math.round(blue.g * (1 - t) + white.g * t),
+      b: Math.round(blue.b * (1 - t) + white.b * t),
+    };
+  } else {
+    const t = value; 
+    resultColor = {
+      r: Math.round(white.r * (1 - t) + red.r * t),
+      g: Math.round(white.g * (1 - t) + red.g * t),
+      b: Math.round(white.b * (1 - t) + red.b * t),
+    };
+  }
+  return `rgb(${resultColor.r}, ${resultColor.g}, ${resultColor.b})`;
+}
+
+function gradientColorForCorrelationForParticles(value) {
+  const blue = { r: 0, g: 0, b: 255 };   // Azul
+  const white = { r: 255, g: 255, b: 255 }; // Branco
+  const red = { r: 255, g: 0, b: 0 };    // Vermelho
+
+  let resultColor;
+
+  if (value < 0) {
+    const t = (value + 1); 
+    resultColor = {
+      r: Math.round(blue.r * (1 - t) + white.r * t),
+      g: Math.round(blue.g * (1 - t) + white.g * t),
+      b: Math.round(blue.b * (1 - t) + white.b * t),
+    };
+  } else {
+    const t = value; 
+    resultColor = {
+      r: Math.round(white.r * (1 - t) + red.r * t),
+      g: Math.round(white.g * (1 - t) + red.g * t),
+      b: Math.round(white.b * (1 - t) + red.b * t),
+    };
+  }
+  return [resultColor.r, resultColor.g, resultColor.b];
+}
+
 
 const blue_material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
 const green_material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
@@ -102,9 +153,8 @@ function createCube(color=0x00ff00, wireframe=false, x=0, y=0, z=0, size=0.1 ) {
       wireframe: wireframe,
   })
   var cube = new THREE.Mesh(geometry, material)
-  cube.x = x
-  cube.y = y
-  cube.z = z
+
+  cube.position.set( x, y, z );
 
   cube.scale.set( size, size, size );
 
@@ -124,23 +174,132 @@ function createRandomDCCM( size ) {
 }
 
 //                                                step_length -> Define as dimensões de cada cubo
-function createSlice( slice, pos_x, pos_y, pos_z, step_length ) {
-
-  var cubeInstance = createCube(0xff0000, false, 0, 0, 0, 0.1 )
-  scene.add(cubeInstance)
-
-  return cube
+function createCubeSlice( slice, pos_x, pos_y, pos_z, step_length ) {
+  var DCCM_slice = new Array();
+  for (var i = 0; i < slice.length; i++) {
+    for (var j = 0; j < slice[i].length; j++) {
+      var cubeInstance = createCube(gradientColorForCorrelation(slice[i][j]), false, pos_x+(i*step_length), pos_y+(j*step_length), pos_z, step_length)
+      DCCM_slice.push(cubeInstance)
+    }
+  }
+  return DCCM_slice
 }
 
   // TODO: Partículas (se ficar muito ruim com a renderização dos cubos)
 
+function createParticleSlice( slice, pos_x, pos_y, pos_z, step_length, particle_size ) {
+  const particle_geometry = new THREE.BufferGeometry();
+
+  const positions = [];
+	const colors = [];
+
+  for (var residue = 0; residue < slice.length; residue++) {
+    for (var j = 0; j < slice[residue].length; j++) {
+      positions.push( pos_x+(residue*step_length), pos_y+(j*step_length), pos_z );
+      var color_gradient = gradientColorForCorrelationForParticles(slice[residue][j])
+			colors.push( color_gradient[0]/255.0, color_gradient[1]/255.0, color_gradient[2]/255.0)
+    }
+  }
+  
+  particle_geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+  particle_geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+
+  particle_geometry.computeBoundingSphere();
+
+  const particle_material = new THREE.PointsMaterial( { size: particle_size, vertexColors: true } );
+
+  var points = new THREE.Points( particle_geometry, particle_material );
+  return points
+}
 
 
 
-var random_DCCM = createRandomDCCM(10)
 
-createSlice( slice, pos_x, pos_y, pos_z, step_length )
+var random_ddcms = []
+var number_of_slices = myArray.length
+var number_of_residues = myArray[0].length
+var step_length = 0.09
+var plane_length = step_length * number_of_residues
+var plane_depth = step_length * number_of_slices
+var particle_size = 0.11
 
+
+
+
+// for (let i = 0; i < number_of_slices; i++) {
+//   random_ddcms.push(createRandomDCCM(number_of_residues))
+// }
+
+const fontLoader = new FontLoader()
+
+for (let i = 0; i < myArray.length; i++) {   //     v-padding-v
+  var dccm_points = createParticleSlice(myArray[i], 1, 0.05, (-1) - (i*0.1), step_length, particle_size )
+
+  fontLoader.load(
+    'node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json',
+    (droidFont) => {
+      const textGeometry = new TextGeometry(`Slice ${i}`,{
+        depth: 0.001,
+        size: 0.055,
+        font: droidFont
+      })
+      const textMaterial = new THREE.MeshMatcapMaterial({ color: 0x303030})
+      const textMesh = new THREE.Mesh(textGeometry, textMaterial)
+      textMesh.position.x = (number_of_residues * 0.1) - 0.30
+      textMesh.position.y = 0
+      textMesh.position.z = -0.97 - (i * step_length * 1.112) // -0.97 and 1.11 arbitrary
+      textMesh.rotateX(-Math.PI / 2)
+      scene.add(textMesh)
+    }
+  )
+
+  scene.add(dccm_points)
+}
+
+
+for (let i = 0; i < myArray[0].length; i++) {
+  fontLoader.load(
+    'node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json',
+    (droidFont) => {
+      const textGeometry = new TextGeometry(`Resíduo ${i}`,{
+        depth: 0.001,
+        size: 0.055,
+        font: droidFont
+      })
+      const textMaterial = new THREE.MeshMatcapMaterial({ color: 0x303030})
+      const textMesh = new THREE.Mesh(textGeometry, textMaterial)
+      textMesh.position.x = 0.98 + (i * step_length * 1.0001) // -0.97 and 1.11 arbitrary
+      textMesh.position.y = 0
+      textMesh.position.z = -0.97
+
+      textMesh.rotateX(-Math.PI / 2)
+      textMesh.rotateZ(-Math.PI / 2)
+      scene.add(textMesh)
+    }
+  )
+}
+
+// Add plane
+const plane_geometry = new THREE.BufferGeometry();
+
+
+var adjust = 2 // default = 2, somme padding
+const plane_vertices = new Float32Array( [
+	 (1.0 * plane_length) + adjust, 0.0,    0.0,
+	 (1.0 * plane_length) + adjust, 0.0,  (-1.0 * plane_depth) - adjust,
+	 0.0,                           0.0,  (-1.0 * plane_depth) - adjust,
+
+	 0.0,                           0.0,    0.0,
+	 (1.0 * plane_length) + adjust, 0.0,    0.0,
+	 0.0,                           0.0,  (-1.0 * plane_depth) - adjust,
+] );
+
+// itemSize = 3 because there are 3 values (components) per vertex
+plane_geometry.setAttribute( 'position', new THREE.BufferAttribute( plane_vertices, 3 ) );
+const material = new THREE.MeshBasicMaterial( { color: 0xf0f0f0 } );
+const mesh = new THREE.Mesh( plane_geometry, material );
+
+scene.add(mesh)
 
 
 function animate() {
@@ -164,3 +323,25 @@ function render() {
 
 animate()
 //render()
+
+
+
+// const geometry = new THREE.BufferGeometry();
+
+// const n_particles_col = 10
+// const n_particles_row = 10 
+
+// const particles_vertices = []
+// for (let i = 0; i < n_particles_col; i++) {
+//   for (let j = 0; j < n_particles_row; j++) {
+//     const point = [i, j, 0]
+//     particles_vertices.push(...point)
+//   }
+// }
+
+// const vertices = new Float32Array(particles_vertices);
+
+// geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+// const material = new THREE.PointsMaterial( { color: 0xff0000 } );
+// const mesh = new THREE.Points( geometry, material );
+

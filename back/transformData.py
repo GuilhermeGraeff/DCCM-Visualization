@@ -168,6 +168,14 @@ class Algorithms:
                     txt_file.write("],\n")
                 txt_file.write("]\n")
 
+    def makeSerializable(self, obj):
+        if isinstance(obj, list):
+            return [self.makeSerializable(item) for item in obj]  # Processa listas recursivamente
+        elif hasattr(obj, 'toList'):  # Se tiver o método 'toList', chama-o
+            return self.makeSerializable(obj.toList())
+        else:
+            return obj
+
 def main() -> int:
     app = dataTranformer()
     
@@ -180,6 +188,11 @@ def main() -> int:
     covariances = app.algs.getFullCovariancesFromDeltas(deltas)
 
     mean_sliced_covariances = app.algs.getAverageSlicesFromCovariances(covariances, 5)
+
+    array_serializable = app.algs.makeSerializable(mean_sliced_covariances.tolist())
+
+    with open('./data/msc_output.txt', 'w') as filehandle:
+        json.dump(array_serializable, filehandle)
 
     aux = 0
     with Bar('generate images...') as bar:
