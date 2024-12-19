@@ -4,10 +4,9 @@ import Stats from 'three/examples/jsm/libs/stats.module'
 import { GUI } from 'dat.gui'
 
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { TTFLoader } from 'three/examples/jsm/loaders/TTFLoader.js'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 
-import myArray from './data/MscOutputArray.js'
+import myArray from '../data/MscOutputArray.js'
 
 // Funções relacionadas a cena 
 
@@ -226,6 +225,7 @@ var particle_size = 0.11
 
 
 
+
 // for (let i = 0; i < number_of_slices; i++) {
 //   random_ddcms.push(createRandomDCCM(number_of_residues))
 // }
@@ -301,6 +301,7 @@ const mesh = new THREE.Mesh( plane_geometry, material );
 
 scene.add(mesh)
 
+createCube()
 
 function animate() {
   requestAnimationFrame(animate)
