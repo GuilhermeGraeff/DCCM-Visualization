@@ -95,18 +95,18 @@ function gradientColorForCorrelationForParticles(value) {
   let resultColor;
 
   if (value < 0) {
-    const t = (value + 1); 
+    const t = (value + 0.75); 
     resultColor = {
-      r: Math.round(blue.r * (1 - t) + white.r * t),
+      r: Math.round(blue.r * (1 - t) + white.r * t),  
       g: Math.round(blue.g * (1 - t) + white.g * t),
       b: Math.round(blue.b * (1 - t) + white.b * t),
     };
   } else {
-    const t = value; 
+    const t = value + 0.25; 
     resultColor = {
-      r: Math.round(white.r * (1 - t) + red.r * t),
-      g: Math.round(white.g * (1 - t) + red.g * t),
-      b: Math.round(white.b * (1 - t) + red.b * t),
+      r: Math.round(red.r * t + white.r * (1 - t)),
+      g: Math.round(red.g * t + white.g * (1 - t)),
+      b: Math.round(red.b * t + white.b * (1 - t)),
     };
   }
   return [resultColor.r, resultColor.g, resultColor.b];
@@ -194,6 +194,9 @@ function createParticleSlice( slice, pos_x, pos_y, pos_z, step_length, particle_
 
   for (var residue = 0; residue < slice.length; residue++) {
     for (var j = 0; j < slice[residue].length; j++) {
+      if (slice[residue][j] > 0) {
+        continue
+      }
       positions.push( pos_x+(residue*step_length), pos_y+(j*step_length), pos_z );
       var color_gradient = gradientColorForCorrelationForParticles(slice[residue][j])
 			colors.push( color_gradient[0]/255.0, color_gradient[1]/255.0, color_gradient[2]/255.0)
@@ -233,8 +236,12 @@ var particle_size = 0.11
 const fontLoader = new FontLoader()
 
 for (let i = 0; i < myArray.length; i++) {   //     v-padding-v
-  var dccm_points = createParticleSlice(myArray[i], 1, 0.05, (-1) - (i*0.1), step_length, particle_size )
 
+  // if (i == 3){
+  //   particle_size = 0.11
+  // }
+  var dccm_points = createParticleSlice(myArray[i], 1, 0.05, (-1) - (i*0.1), step_length, particle_size )
+  // particle_size = 0.022
   fontLoader.load(
     'node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json',
     (droidFont) => {
