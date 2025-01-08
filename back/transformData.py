@@ -50,7 +50,7 @@ class Algorithms:
         array_all_trajectory = []
         models = self.PDB_parse(pdb_file_handle)
 
-        structure = self.parser.get_structure("1aki", pdb_file_handle)
+        structure = self.parser.get_structure("7PZJ", pdb_file_handle)
 
         with Bar('matrixFromPDB()...') as bar:
             for model in structure:
@@ -179,7 +179,7 @@ class Algorithms:
 def main() -> int:
     app = dataTranformer()
     
-    coords = app.algs.matrixFromPDB("./data/1AKI.pdb")
+    coords = app.algs.matrixFromPDB("./data/trjout_CA_esterase_no_ligand_1.pdb")
     
     app.algs.writeNakedArrayCoords(coords, "./data/output.txt")
 

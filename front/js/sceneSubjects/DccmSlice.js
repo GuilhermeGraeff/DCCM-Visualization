@@ -1,36 +1,51 @@
 import * as THREE from 'three'
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import DccmFunctions from '../funcionalities/DccmFunctions'
+import dccm_data from '../../data/msc_output_art.js'
 
-function AxisMark(scene) {
-
-	const blue_material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
-	const green_material = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
-	const red_material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-
-	const blue_points = [];
-	const green_points = [];
-	const red_points = [];
+function DccmSlice(scene) {
 
 
-	blue_points.push( new THREE.Vector3( 0, 0, -1 ) );
-	blue_points.push( new THREE.Vector3( 0, 0, 1 ) );
-	green_points.push( new THREE.Vector3( 0, -1, 0 ) );
-	green_points.push( new THREE.Vector3( 0, 1, 0 ) );
-	red_points.push( new THREE.Vector3( -1, 0, 0 ) );
-	red_points.push( new THREE.Vector3( 1, 0, 0 ) );
+	var number_of_slices = dccm_data.length
+	var number_of_residues = dccm_data[0].length
+	var step_length = 0.09
+	var plane_length = step_length * number_of_residues
+	var plane_depth = step_length * number_of_slices
+	var particle_size = 0.11
 
 
-	const blue_points_geometry = new THREE.BufferGeometry().setFromPoints( blue_points );
-	const green_points_geometry = new THREE.BufferGeometry().setFromPoints( green_points );
-	const red_points_geometry = new THREE.BufferGeometry().setFromPoints( red_points );
+	const fontLoader = new FontLoader()
+	const dccm = new DccmFunctions()
 
-	const blue_line = new THREE.Line( blue_points_geometry, blue_material );
-	const green_line = new THREE.Line( green_points_geometry, green_material );
-	const red_line = new THREE.Line( red_points_geometry, red_material );
+	for (let i = 0; i < dccm_data.length; i++) {   //     v-padding-v
 
-	scene.add( blue_line );
-	scene.add( green_line );
-	scene.add( red_line );
-	
+		// if (i == 3){
+		//   particle_size = 0.11
+		// }
+		var dccm_points = dccm.createParticleSlice(dccm_data[i], 1, 0.05, (-1) - (i*0.1), step_length, particle_size )
+		// particle_size = 0.022
+		fontLoader.load(
+			'node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json',
+			(droidFont) => {
+			const textGeometry = new TextGeometry(`Slice ${i}`,{
+				depth: 0.001,
+				size: 0.055,
+				font: droidFont
+			})
+			const textMaterial = new THREE.MeshMatcapMaterial({ color: 0x303030})
+			const textMesh = new THREE.Mesh(textGeometry, textMaterial)
+			textMesh.position.x = (number_of_residues * 0.1) - 0.30
+			textMesh.position.y = 0
+			textMesh.position.z = -0.97 - (i * step_length * 1.112) // -0.97 and 1.11 arbitrary
+			textMesh.rotateX(-Math.PI / 2)
+			scene.add(textMesh)
+			}
+		)
+
+		scene.add(dccm_points)
+	}
+
 	this.update = function(time) {
 		const scale = Math.sin(time)+2;
 
@@ -38,4 +53,4 @@ function AxisMark(scene) {
 	}
 }
 
-export default AxisMark
+export default DccmSlice

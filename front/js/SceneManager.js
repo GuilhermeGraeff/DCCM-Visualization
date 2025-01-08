@@ -5,6 +5,8 @@ import Stats from 'three/examples/jsm/libs/stats.module'
 
 import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
+import DccmSlice from './sceneSubjects/DccmSlice'
+
 
 function SceneManager() {
     const clock = new THREE.Clock();
@@ -58,7 +60,8 @@ function SceneManager() {
         
         const sceneSubjects = [
             new GeneralLights(scene),
-            new AxisMark(scene)
+            new AxisMark(scene),
+            new DccmSlice(scene)
         ];
         
         return sceneSubjects;
