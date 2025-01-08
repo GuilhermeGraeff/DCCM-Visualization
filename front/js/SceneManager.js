@@ -1,11 +1,17 @@
-function SceneManager(canvas) {
 
-    
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import Stats from 'three/examples/jsm/libs/stats.module'
+
+import GeneralLights from './sceneSubjects/GeneralLights';
+import AxisMark from './sceneSubjects/AxisMark'
+
+function SceneManager() {
     const clock = new THREE.Clock();
     
     const screenDimensions = {
-        width: canvas.width,
-        height: canvas.height
+        width: window.innerWidth,
+        height: window.innerHeight
     }
     
     const scene = buildScene();
@@ -13,23 +19,21 @@ function SceneManager(canvas) {
     const camera = buildCamera(screenDimensions);
     const controls = buildControls();
     const sceneSubjects = createSceneSubjects(scene);
+    const stats = createStats();
 
+    
     function buildScene() {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x959595);
-        scene.backgroundBlurriness = 0.5
+        scene.backgroundBlurriness = 0
 
         return scene;
     }
 
     function buildRender({ width, height }) {
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); 
-        const DPR = (window.devicePixelRatio) ? window.devicePixelRatio : 1;
-        renderer.setPixelRatio(DPR);
-        renderer.setSize(width, height);
-
-        renderer.gammaInput = true;
-        renderer.gammaOutput = true; 
+        const renderer = new THREE.WebGLRenderer()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        document.body.appendChild(renderer.domElement)
 
         return renderer;
     }
@@ -46,37 +50,56 @@ function SceneManager(canvas) {
     }
 
     function buildControls() {
-        var controls = new THREE.OrbitControls(camera, renderer.domElement)
+        const controls = new OrbitControls(camera, renderer.domElement)
         return controls;
     }
 
     function createSceneSubjects(scene) {
+        
         const sceneSubjects = [
             new GeneralLights(scene),
-            new SceneSubject(scene)
+            new AxisMark(scene)
         ];
-
+        
         return sceneSubjects;
     }
 
+    function createStats() {
+        const stats = Stats()
+        document.body.appendChild(stats.dom)
+
+        return stats;
+    }
+
     this.update = function() {
+        
         const elapsedTime = clock.getElapsedTime();
 
-        for(let i=0; i<sceneSubjects.length; i++)
-        	sceneSubjects[i].update(elapsedTime);
+        for(let i=0; i<sceneSubjects.length; i++){
+            if (Array.isArray(sceneSubjects[i])){
+                for(let j=0; j<sceneSubjects[i].length; j++){
+                    sceneSubjects[i][j].update(elapsedTime);
+                }
+            } else {
+                sceneSubjects[i].update(elapsedTime);
+            }
+        }
+        stats.begin()
+
+
+        stats.end()
 
         renderer.render(scene, camera);
+
+        stats.update()
     }
 
     this.onWindowResize = function() {
-        const { width, height } = canvas;
-
-        screenDimensions.width = width;
-        screenDimensions.height = height;
-
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-        
-        renderer.setSize(width, height);
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        render()
     }
 }
+
+export default SceneManager
