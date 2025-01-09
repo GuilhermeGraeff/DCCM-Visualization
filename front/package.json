@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "dat.gui": "^0.7.9",
-    "three": "^0.170.0"
+    "three": "^0.170.0",
+    "troika-three-text": "^0.52.3"
   },
   "devDependencies": {
     "vite": "^6.0.3"

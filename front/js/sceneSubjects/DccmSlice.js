@@ -6,12 +6,10 @@ import dccm_data from '../../data/msc_output_art.js'
 
 function DccmSlice(scene) {
 
-
+	// , dccm <- este será o parâmetro
 	var number_of_slices = dccm_data.length
 	var number_of_residues = dccm_data[0].length
 	var step_length = 0.09
-	var plane_length = step_length * number_of_residues
-	var plane_depth = step_length * number_of_slices
 	var particle_size = 0.11
 
 

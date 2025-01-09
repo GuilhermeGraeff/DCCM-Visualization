@@ -2,10 +2,13 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module'
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
 import DccmSlice from './sceneSubjects/DccmSlice'
+import GroundPlane from './sceneSubjects/GroundPlane'
+
 
 
 function SceneManager() {
@@ -22,6 +25,7 @@ function SceneManager() {
     const controls = buildControls();
     const sceneSubjects = createSceneSubjects(scene);
     const stats = createStats();
+    const panel = createPanel();
 
     
     function buildScene() {
@@ -61,7 +65,8 @@ function SceneManager() {
         const sceneSubjects = [
             new GeneralLights(scene),
             new AxisMark(scene),
-            new DccmSlice(scene)
+            new DccmSlice(scene),
+            new GroundPlane(scene),
         ];
         
         return sceneSubjects;
@@ -73,6 +78,46 @@ function SceneManager() {
 
         return stats;
     }
+
+    function createPanel() {
+        let settings;
+        const panel = new GUI( { width: 310 } );
+
+        const folder1 = panel.addFolder( 'DCCM settings' );
+
+        settings = {
+            'select': true,
+            'button': buttonFunction,
+            'modify step size': 1,
+        };
+
+        folder1.add( settings, 'select' ).onChange( select );
+        folder1.add( settings, 'button' );
+        folder1.add( settings, 'modify step size', 1, 300, 1 ).onChange( range );
+
+        folder1.open();
+
+        return panel
+    }
+
+    function select( condition ) {
+
+        console.log(condition, 'saaaaaaaaaaaaalve')
+
+    }
+
+    function range( num ) {
+
+        console.log(num, 'aaaaaaaaaaaaaaa')
+
+    }
+
+    function buttonFunction() {
+
+        console.log('xesquedele')
+
+    }
+
 
     this.update = function() {
         
