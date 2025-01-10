@@ -65,8 +65,8 @@ function SceneManager() {
         const sceneSubjects = [
             new GeneralLights(scene),
             new AxisMark(scene),
-            new DccmSlice(scene),
             new GroundPlane(scene),
+            new DccmSlice(scene),
         ];
         
         return sceneSubjects;
@@ -87,13 +87,13 @@ function SceneManager() {
 
         settings = {
             'select': true,
-            'button': buttonFunction,
             'modify step size': 1,
+            'applyChanges': applyChanges,
         };
 
         folder1.add( settings, 'select' ).onChange( select );
-        folder1.add( settings, 'button' );
         folder1.add( settings, 'modify step size', 1, 300, 1 ).onChange( range );
+        folder1.add( settings, 'applyChanges' );
 
         folder1.open();
 
@@ -112,11 +112,20 @@ function SceneManager() {
 
     }
 
-    function buttonFunction() {
-
-        console.log('xesquedele')
-
+    function applyChanges() {
+        console.log(sceneSubjects)
+        sceneSubjects[3].disposePoints()
+        renderer.render(scene, camera);
     }
+
+    // Dccm management:
+
+
+
+
+
+
+
 
 
     this.update = function() {

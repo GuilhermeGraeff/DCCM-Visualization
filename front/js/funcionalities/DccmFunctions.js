@@ -24,7 +24,7 @@ class DccmFunctions {
         
         for (var residue = 0; residue < slice.length; residue++) {
             for (var j = 0; j < slice[residue].length; j++) {
-                if ((slice[residue][j] < 0.3) && (slice[residue][j] > -0.3)) {
+                if ((slice[residue][j] < 0.25) && (slice[residue][j] > -0.25)) {
                     continue
                 }
                 positions.push( pos_x+(residue*step_length), pos_y+(j*step_length), pos_z );
@@ -40,8 +40,7 @@ class DccmFunctions {
         
         const particle_material = new THREE.PointsMaterial( { size: particle_size, vertexColors: true } );
         
-        var points = new THREE.Points( particle_geometry, particle_material );
-        return points
+        return [particle_geometry, particle_material]
     }
 
     gradientColorForCorrelationForParticles(value) {
