@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import {Text} from 'troika-three-text'
 
 class DccmFunctions {
 
@@ -16,7 +17,7 @@ class DccmFunctions {
     }
 
     // particle stuff
-    createParticleSlice( slice, pos_x, pos_y, pos_z, step_length, particle_size ) {
+    createParticleSlice( slice, pos_x, pos_y, pos_z, step_length, particle_size, neg_tre, pos_tre ) {
         const particle_geometry = new THREE.BufferGeometry();
         
         const positions = [];
@@ -24,7 +25,7 @@ class DccmFunctions {
         
         for (var residue = 0; residue < slice.length; residue++) {
             for (var j = 0; j < slice[residue].length; j++) {
-                if ((slice[residue][j] < 0.25) && (slice[residue][j] > -0.25)) {
+                if ((slice[residue][j] > -neg_tre && (slice[residue][j] < pos_tre))) {
                     continue
                 }
                 positions.push( pos_x+(residue*step_length), pos_y+(j*step_length), pos_z );

@@ -23,9 +23,10 @@ function SceneManager() {
     const renderer = buildRender(screenDimensions);
     const camera = buildCamera(screenDimensions);
     const controls = buildControls();
-    const sceneSubjects = createSceneSubjects(scene);
     const stats = createStats();
     const panel = createPanel();
+    var sceneSubjects = createSceneSubjects(scene);
+    var settings;
 
     
     function buildScene() {
@@ -62,11 +63,11 @@ function SceneManager() {
 
     function createSceneSubjects(scene) {
         
-        const sceneSubjects = [
+        var sceneSubjects = [
             new GeneralLights(scene),
             new AxisMark(scene),
             new GroundPlane(scene),
-            new DccmSlice(scene),
+            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers']),
         ];
         
         return sceneSubjects;
@@ -80,20 +81,30 @@ function SceneManager() {
     }
 
     function createPanel() {
-        let settings;
         const panel = new GUI( { width: 310 } );
 
         const folder1 = panel.addFolder( 'DCCM settings' );
 
         settings = {
-            'select': true,
-            'modify step size': 1,
+            'with ligand': false,
+            'modify positive threshold': 0.25,
+            'modify negative threshold': 0.25,
+            'selected slice': -1,
+            'display unselected layers': true,
+            'removeObjects': removeObjects,
+            'recreateScene': recreateScene,
             'applyChanges': applyChanges,
         };
-
-        folder1.add( settings, 'select' ).onChange( select );
-        folder1.add( settings, 'modify step size', 1, 300, 1 ).onChange( range );
+        
+        folder1.add( settings, 'with ligand').onChange( applyChanges );
+        folder1.add( settings, 'modify positive threshold', 0, 1, 0.05 ).onChange( applyChanges);
+        folder1.add( settings, 'modify negative threshold', 0, 1, 0.05 ).onChange( applyChanges );
+        folder1.add( settings, 'selected slice', -1, 48, 1 ).onChange( applyChanges );
+        folder1.add( settings, 'display unselected layers' ).onChange( applyChanges );
+        folder1.add( settings, 'removeObjects' );
+        folder1.add( settings, 'recreateScene' );
         folder1.add( settings, 'applyChanges' );
+
 
         folder1.open();
 
@@ -102,21 +113,46 @@ function SceneManager() {
 
     function select( condition ) {
 
-        console.log(condition, 'saaaaaaaaaaaaalve')
+        console.log('display unselected layers', condition)
 
     }
 
-    function range( num ) {
 
-        console.log(num, 'aaaaaaaaaaaaaaa')
+    function removeObjects() {
+        console.log(sceneSubjects)
+        sceneSubjects[3].disposePoints(scene,sceneSubjects[3].parentObject)
+        while(scene.children.length > 0){ 
+            scene.remove(scene.children[0]); 
+        }
+        console.log(scene.children)
+        renderer.render(scene, camera);
+    }
 
+    function recreateScene() {
+        sceneSubjects = [
+            new GeneralLights(scene),
+            new AxisMark(scene),
+            new GroundPlane(scene),
+            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers']),
+        ];
+        renderer.render(scene, camera);
     }
 
     function applyChanges() {
         console.log(sceneSubjects)
-        sceneSubjects[3].disposePoints()
+        sceneSubjects[3].disposePoints(scene,sceneSubjects[3].parentObject)
+        while(scene.children.length > 0){ 
+            scene.remove(scene.children[0]); 
+        }
+        sceneSubjects = [
+            new GeneralLights(scene),
+            new AxisMark(scene),
+            new GroundPlane(scene),
+            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers']),
+        ];
         renderer.render(scene, camera);
     }
+    
 
     // Dccm management:
 

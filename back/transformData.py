@@ -52,6 +52,8 @@ class Algorithms:
 
         structure = self.parser.get_structure("7PZJ", pdb_file_handle)
 
+
+
         with Bar('matrixFromPDB()...') as bar:
             for model in structure:
                 array_all_structure = []
@@ -179,15 +181,15 @@ class Algorithms:
 def main() -> int:
     app = dataTranformer()
     
-    coords = app.algs.matrixFromPDB("./data/trjout_CA_esterase_no_ligand_1.pdb")
-    
+    coords = app.algs.matrixFromPDB("./data/trjout_CA_esterase_ligand_1.pdb")
+
     app.algs.writeNakedArrayCoords(coords, "./data/output.txt")
 
     deltas = app.algs.getFullDeltaFromMatrix(coords)
     
     covariances = app.algs.getFullCovariancesFromDeltas(deltas)
 
-    mean_sliced_covariances = app.algs.getAverageSlicesFromCovariances(covariances, 5)
+    mean_sliced_covariances = app.algs.getAverageSlicesFromCovariances(covariances, 2)
 
     array_serializable = app.algs.makeSerializable(mean_sliced_covariances.tolist())
 
