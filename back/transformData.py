@@ -50,7 +50,7 @@ class Algorithms:
         array_all_trajectory = []
         models = self.PDB_parse(pdb_file_handle)
 
-        structure = self.parser.get_structure("7PZJ", pdb_file_handle)
+        structure = self.parser.get_structure(" ", pdb_file_handle)
 
 
 

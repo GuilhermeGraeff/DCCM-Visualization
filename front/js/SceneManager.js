@@ -8,6 +8,7 @@ import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
 import DccmSlice from './sceneSubjects/DccmSlice'
 import GroundPlane from './sceneSubjects/GroundPlane'
+import TextTest from './sceneSubjects/TextTest'
 
 
 
@@ -99,7 +100,7 @@ function SceneManager() {
         folder1.add( settings, 'with ligand').onChange( applyChanges );
         folder1.add( settings, 'modify positive threshold', 0, 1, 0.05 ).onChange( applyChanges);
         folder1.add( settings, 'modify negative threshold', 0, 1, 0.05 ).onChange( applyChanges );
-        folder1.add( settings, 'selected slice', -1, 48, 1 ).onChange( applyChanges );
+        folder1.add( settings, 'selected slice', -1, 18, 1 ).onChange( applyChanges );
         folder1.add( settings, 'display unselected layers' ).onChange( applyChanges );
         folder1.add( settings, 'removeObjects' );
         folder1.add( settings, 'recreateScene' );
