@@ -170,10 +170,73 @@ class Algorithms:
                     txt_file.write("],\n")
                 txt_file.write("]\n")
 
-    def makeSerializable(self, obj):
-        if isinstance(obj, list):
-            return [self.makeSerializable(item) for item in obj]  # Processa listas recursivamente
-        elif hasattr(obj, 'toList'):  # Se tiver o método 'toList', chama-o
+    def makeSerializable(self, obj): for i in range(0,len(trajectory)-1-1,1):
+                deltaFrame = self.getDeltaFromOneToOneFrame(trajectory[i], trajectory[i+1])
+                deltaMatrixTrajectory.append(deltaFrame)
+                bar.next()
+
+        return deltaMatrixTrajectory
+    
+    def getDeltaFromOneToOneFrame(self, reference_frame, next_frame):
+        deltaMatrix = np.subtract(next_frame, reference_frame)
+        return deltaMatrix
+
+    def getFullCovariancesFromDeltas(self, deltas):
+        covariances = []
+        aux = 0
+        with Bar('getFullCovariancesFromDeltas()...') as bar:
+            for i in deltas:
+                aux += 1
+                covariances.append(self.divDotPdctByPdctOfPowSqrtRoots(np.array(i), np.transpose(np.array(i))))
+                bar.next()
+        return covariances
+
+    def divDotPdctByPdctOfPowSqrtRoots(self, a, b):
+        result = np.zeros((a.shape[0], b.shape[1]))
+        for i in range(a.shape[0]):
+            for j in range(b.shape[1]):
+                result[i][j] = self.operateBewteenTwoVectors(a[i], np.array([b[0][j], b[1][j], b[2][j]]))
+        return result
+
+
+    def operateBewteenTwoVectors(self, a, b):
+        # print(a, b)
+        dot_product = np.dot(a, b)
+        sqrt_a = np.sqrt(np.power(a, 2))
+        sqrt_b = np.sqrt(np.power(b, 2))
+        numerator = dot_product
+        denominator = sum(sqrt_a) * sum(sqrt_b)
+        result = numerator / denominator
+        return result
+
+    def getAverageSlicesFromCovariances(self, covariances, n_frames_per_slice = 3):
+
+                 # round(len(covariances)
+        n_slices = math.floor(len(covariances) / n_frames_per_slice)
+        aux_rest = len(covariances) % n_frames_per_slice
+
+        mean_sliced_covariances = None
+        is_first_pass = True
+
+        with Bar('getFullCovariancesFromDeltas()...') as bar:
+            for i in range(0, n_slices, 1):
+                if i == n_slices - 1:
+                    if aux_rest > 0:
+                        mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):])]])
+                else:
+                    if is_first_pass:
+                        mean_sliced_covariances = [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):((i*n_frames_per_slice)+n_frames_per_slice)])]
+                    else:
+                        mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):((i*n_frames_per_slice)+n_frames_per_slice)])]])
+                is_first_pass = False
+                bar.next()
+        return mean_sliced_covariances
+
+    def getAverageFromSlice(self, _slice):
+        average = _slice[0]
+        for i in _slice[1:]:
+            average = np.add(average, i)
+        return average/len(_slice)o método 'toList', chama-o
             return self.makeSerializable(obj.toList())
         else:
             return obj
@@ -181,15 +244,22 @@ class Algorithms:
 def main() -> int:
     app = dataTranformer()
     
-    coords = app.algs.matrixFromPDB("./data/trjout_CA_esterase_ligand_1.pdb")
+    coords = app.algs.matrixFromPDB("./data/c-alpha-skip-256.pdb")
 
-    app.algs.writeNakedArrayCoords(coords, "./data/output.txt")
+    print("passei coords")
+
+    # app.algs.writeNakedArrayCoords(coords, "./data/output.txt")
 
     deltas = app.algs.getFullDeltaFromMatrix(coords)
     
+    print("passei deltas")
+
     covariances = app.algs.getFullCovariancesFromDeltas(deltas)
 
-    mean_sliced_covariances = app.algs.getAverageSlicesFromCovariances(covariances, 2)
+    print("passei covariances")
+
+
+    mean_sliced_covariances = app.algs.getAverageSlicesFromCovariances(covariances, 1)
 
     array_serializable = app.algs.makeSerializable(mean_sliced_covariances.tolist())
 
