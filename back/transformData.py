@@ -191,7 +191,7 @@ class Algorithms:
                 bar.next()
         return covariances
 
-    def divDotPdctByPdctOfPowSqrtRoots(self, a, b):
+    def divDotPdctByPdctOfPowSqrtRoots(self, a, b): 
         result = np.zeros((a.shape[0], b.shape[1]))
         for i in range(a.shape[0]):
             for j in range(b.shape[1]):
@@ -220,7 +220,7 @@ class Algorithms:
 
         with Bar('getFullCovariancesFromDeltas()...') as bar:
             for i in range(0, n_slices, 1):
-                if i == n_slices - 1:
+                if i == n_slices - 1:   
                     if aux_rest > 0:
                         mean_sliced_covariances = np.concatenate([mean_sliced_covariances, [self.getAverageFromSlice(covariances[(i*n_frames_per_slice):])]])
                 else:
@@ -233,18 +233,15 @@ class Algorithms:
         return mean_sliced_covariances
 
     def getAverageFromSlice(self, _slice):
-        average = _slice[0]
-        for i in _slice[1:]:
-            average = np.add(average, i)
-        return average/len(_slice)o método 'toList', chama-o
-            return self.makeSerializable(obj.toList())
-        else:
-            return obj
+            average = _slice[0]
+            for i in _slice[1:]:
+                average = np.add(average, i)
+            return average/len(_slice)
 
 def main() -> int:
     app = dataTranformer()
     
-    coords = app.algs.matrixFromPDB("./data/c-alpha-skip-256.pdb")
+    coords = app.algs.matrixFromPDB("./data/mc1r/c-alpha-skip-256.pdb")
 
     print("passei coords")
 
