@@ -6,11 +6,11 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
-import DccmSlice from './sceneSubjects/DccmSlice'
+import DccmSlice from './sceneSubjects/DccmSliceRefactor' // Mudar aquiiiiiiiiiii
 import GroundPlane from './sceneSubjects/GroundPlane'
 import TextTest from './sceneSubjects/TextTest'
 
-
+// import WebGPURenderer from 'three/src/renderers/webgpu/WebGPURenderer.js';
 
 function SceneManager() {
     const clock = new THREE.Clock();
@@ -45,6 +45,26 @@ function SceneManager() {
 
         return renderer;
     }
+
+    // function buildRender({ width, height }) {
+    //     let renderer;
+    
+    //     // 1. Verifique se o WebGPU está disponível no navegador
+    //     if (WebGPU.isAvailable()) {
+    //         renderer = new WebGPURenderer({ antialias: true });
+    //     } else {
+    //         // 2. Crie um fallback para WebGL se WebGPU não for suportado
+    //         console.warn("WebGPU not available, falling back to WebGL.");
+    //         renderer = new THREE.WebGLRenderer({ antialias: true });
+    //     }
+        
+    //     // Configurações padrão do renderer
+    //     renderer.setSize(width, height);
+    //     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    //     document.body.appendChild(renderer.domElement)
+    
+    //     return renderer;
+    // }
 
     function buildCamera({ width, height }) {
         const aspectRatio = width / height;
@@ -100,7 +120,7 @@ function SceneManager() {
         folder1.add( settings, 'with ligand').onChange( applyChanges );
         folder1.add( settings, 'modify positive threshold', 0, 1, 0.05 ).onChange( applyChanges);
         folder1.add( settings, 'modify negative threshold', 0, 1, 0.05 ).onChange( applyChanges );
-        folder1.add( settings, 'selected slice', -1, 18, 1 ).onChange( applyChanges );
+        folder1.add( settings, 'selected slice', -1, 50, 1 ).onChange( applyChanges );
         folder1.add( settings, 'display unselected layers' ).onChange( applyChanges );
         folder1.add( settings, 'removeObjects' );
         folder1.add( settings, 'recreateScene' );

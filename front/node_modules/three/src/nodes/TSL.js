@@ -11,6 +11,7 @@ export * from './core/IndexNode.js';
 export * from './core/ParameterNode.js';
 export * from './core/PropertyNode.js';
 export * from './core/StackNode.js';
+export * from './core/StructNode.js';
 export * from './core/UniformGroupNode.js';
 export * from './core/UniformNode.js';
 export * from './core/VaryingNode.js';
@@ -18,15 +19,16 @@ export * from './core/OutputStructNode.js';
 export * from './core/MRTNode.js';
 
 // math
+export * from './math/BitcastNode.js';
 export * from './math/Hash.js';
 export * from './math/MathUtils.js';
 export * from './math/TriNoise3D.js';
 
 // utils
-export * from './utils/EquirectUVNode.js';
+export * from './utils/EquirectUV.js';
 export * from './utils/FunctionOverloadingNode.js';
 export * from './utils/LoopNode.js';
-export * from './utils/MatcapUVNode.js';
+export * from './utils/MatcapUV.js';
 export * from './utils/MaxMipLevelNode.js';
 export * from './utils/Oscillators.js';
 export * from './utils/Packing.js';
@@ -37,24 +39,29 @@ export * from './utils/ViewportUtils.js';
 export * from './utils/RotateNode.js';
 export * from './utils/SpriteSheetUVNode.js';
 export * from './utils/Timer.js';
-export * from './utils/TriplanarTexturesNode.js';
+export * from './utils/TriplanarTextures.js';
 export * from './utils/ReflectorNode.js';
 export * from './utils/RTTNode.js';
 export * from './utils/PostProcessingUtils.js';
+export * from './utils/SampleNode.js';
+export * from './utils/EventNode.js';
 
 // three.js shading language
 export * from './tsl/TSLBase.js';
 
 // accessors
 export * from './accessors/AccessorsUtils.js';
+export * from './accessors/Arrays.js';
 export * from './accessors/UniformArrayNode.js';
 export * from './accessors/Bitangent.js';
 export * from './accessors/BufferAttributeNode.js';
 export * from './accessors/BufferNode.js';
+export * from './accessors/BuiltinNode.js';
 export * from './accessors/Camera.js';
 export * from './accessors/VertexColorNode.js';
 export * from './accessors/CubeTextureNode.js';
 export * from './accessors/InstanceNode.js';
+export * from './accessors/InstancedMeshNode.js';
 export * from './accessors/BatchNode.js';
 export * from './accessors/MaterialNode.js';
 export * from './accessors/MaterialProperties.js';
@@ -83,7 +90,7 @@ export * from './accessors/UserDataNode.js';
 export * from './accessors/VelocityNode.js';
 
 // display
-export * from './display/BlendMode.js';
+export * from './display/BlendModes.js';
 export * from './display/BumpMapNode.js';
 export * from './display/ColorAdjustment.js';
 export * from './display/ColorSpaceNode.js';
@@ -113,9 +120,7 @@ export * from './code/ScriptableNode.js';
 export * from './code/ScriptableValueNode.js';
 
 // fog
-export * from './fog/FogNode.js';
-export * from './fog/FogRangeNode.js';
-export * from './fog/FogExp2Node.js';
+export * from './fog/Fog.js';
 
 // geometry
 export * from './geometry/RangeNode.js';
@@ -126,12 +131,16 @@ export * from './gpgpu/ComputeBuiltinNode.js';
 export * from './gpgpu/BarrierNode.js';
 export * from './gpgpu/WorkgroupInfoNode.js';
 export * from './gpgpu/AtomicFunctionNode.js';
+export * from './gpgpu/SubgroupFunctionNode.js';
 
 // lighting
 export * from './accessors/Lights.js';
 export * from './lighting/LightsNode.js';
 export * from './lighting/LightingContextNode.js';
+export * from './lighting/ShadowBaseNode.js';
 export * from './lighting/ShadowNode.js';
+export * from './lighting/ShadowFilterNode.js';
+export * from './lighting/PointShadowNode.js';
 export * from './lighting/PointLightNode.js';
 
 // pmrem
@@ -140,6 +149,9 @@ export * from './pmrem/PMREMUtils.js';
 
 // procedural
 export * from './procedural/Checker.js';
+
+// shapes
+export * from './shapes/Shapes.js';
 
 // materialX
 export * from './materialx/MaterialXNodes.js';

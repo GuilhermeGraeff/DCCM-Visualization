@@ -4,8 +4,8 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import DccmFunctions from '../funcionalities/DccmFunctions'
 import dccm_data_without_ligand from '../../data/msc_output_without_ligand.js'
 import dccm_data_with_ligand from '../../data/msc_output_with_ligand.js'
-// import dccm_data_other from '../../data/msc_output_other.js'
-
+import dccm_data_other from '../../data/wtjson_output200.js'
+// wtjson_output200.js
 
 
 class DccmSlice {
@@ -20,7 +20,7 @@ class DccmSlice {
 			dccm_data = dccm_data_without_ligand
 		}
 
-		// dccm_data = dccm_data_other
+		dccm_data = dccm_data_other
 
 		this.parentObject = new THREE.Object3D()
 		this.number_of_slices = dccm_data.length;
