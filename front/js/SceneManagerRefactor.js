@@ -30,11 +30,19 @@ function SceneManager() {
     var settings;
 
     
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshNormalMaterial();
+    const objectToOrbit = new THREE.Mesh(geometry, material);
+    objectToOrbit.position.set(15, 15, 0);
+    scene.add(objectToOrbit);
+    controls.target.copy(objectToOrbit.position);
+    scene.remove(objectToOrbit);
+
+
     function buildScene() {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x959595);
         scene.backgroundBlurriness = 0
-
         return scene;
     }
 
@@ -72,7 +80,10 @@ function SceneManager() {
         const nearPlane = 0.1;
         const farPlane = 1000; 
         const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-        camera.position.z = 2
+        camera.position.x = 15
+        camera.position.y = 20
+        camera.position.z = 30
+
 
         return camera;
     }
@@ -103,17 +114,13 @@ function SceneManager() {
 
     function createPanel() {
         const panel = new GUI( { width: 310 } );
-        
-        var fs = require('fs');
-        var files = fs.readdirSync('../data');
-        console.log('files')
-        console.log(files)
+
         const folder1 = panel.addFolder( 'DCCM settings' );
 
         settings = {
             'with ligand': false,
-            'modify positive threshold': 0.75,
-            'modify negative threshold': 0.75,
+            'modify positive threshold': 0.4,
+            'modify negative threshold': 0.4,
             'selected slice': -1,
             'display unselected layers': true,
             'removeObjects': removeObjects,
@@ -192,6 +199,8 @@ function SceneManager() {
     this.update = function() {
         
         const elapsedTime = clock.getElapsedTime();
+
+        controls.update();
 
         for(let i=0; i<sceneSubjects.length; i++){
             if (Array.isArray(sceneSubjects[i])){

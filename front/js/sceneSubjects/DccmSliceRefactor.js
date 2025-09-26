@@ -2,10 +2,6 @@ import * as THREE from 'three'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import DccmFunctions from '../funcionalities/DccmFunctionsRefactor' // Mudar Aquiiiiiii
-// import dccm_data_without_ligand from '../../data/msc_output_without_ligand.js'
-// import dccm_data_with_ligand from '../../data/msc_output_with_ligand.js'
-// import dccm_data_other from '../../data/wtjson_output200.js'
-// wtjson_output200.js
 
 
 class DccmSlice {
@@ -55,8 +51,8 @@ class DccmSlice {
 		// }
 		const fontLoader = new FontLoader();
 		const dccmTools = new DccmFunctions();
-
-		const dataUrl = '../../data/dccm_data.bin';
+		// 'wt' 'wt_lig' 'asp84glu' 'asp84glu_lig' 'asp294his' 'asp294his_lig'
+		const dataUrl = '../../data/wt_lig/Rep_3/dccm_data_100.bin';
 		
 		dccmTools.loadBinaryDCCM(dataUrl)
 					.then(dccmData => {
