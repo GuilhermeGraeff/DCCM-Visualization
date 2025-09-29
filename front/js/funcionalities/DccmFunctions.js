@@ -2,13 +2,7 @@ import * as THREE from 'three'
 import {Text} from 'troika-three-text'
 
 class DccmFunctions {
-    /**
-     * Carrega e processa um arquivo .bin de DCCM compactado.
-     * O arquivo deve ter um cabeçalho de 12 bytes [numSlices, numAtoms, dataTypeId]
-     * seguido pelos dados do triângulo superior de cada matriz.
-     * @param {string} url O caminho para o arquivo 'dccm_data.bin'.
-     * @returns {Promise<Object>} Uma promessa que resolve para um objeto contendo os dados e métodos de acesso.
-     */
+
     async loadBinaryDCCM(url) {
       const response = await fetch(url);
       if (!response.ok) {
@@ -16,15 +10,15 @@ class DccmFunctions {
       }
       const arrayBuffer = await response.arrayBuffer();
 
-      // 1. LER O CABEÇALHO (12 bytes)
+      // 1. Read Header
       const headerView = new DataView(arrayBuffer, 0, 12);
-      const numSlices = headerView.getUint32(0, true); // O 'true' indica little-endian
+      const numSlices = headerView.getUint32(0, true);
       const numAtoms = headerView.getUint32(4, true);
-      const dataTypeId = headerView.getUint32(8, true); // 1 para Float32
+      const dataTypeId = headerView.getUint32(8, true);
 
-      // 2. LER O CORPO DOS DADOS
+      // 2. Read Payload
       let rawData;
-      const dataOffset = 12; // Os dados começam após o cabeçalho
+      const dataOffset = 12; // Data after Header
 
       if (dataTypeId === 1) { // float32
           rawData = new Float32Array(arrayBuffer, dataOffset);
@@ -34,13 +28,7 @@ class DccmFunctions {
 
       const numElementsPerSlice = (numAtoms * (numAtoms + 1)) / 2;
 
-      /**
-       * Acessa de forma eficiente um valor na matriz DCCM compactada.
-       * @param {number} sliceIndex O índice da fatia (slice).
-       * @param {number} i O índice do primeiro átomo.
-       * @param {number} j O índice do segundo átomo.
-       * @returns {number} O valor de correlação.
-       */
+
       const getDCCMValue = (sliceIndex, i, j) => {
           // Garante que i <= j para acessar o triângulo superior
           if (i > j) {
@@ -54,25 +42,17 @@ class DccmFunctions {
           return rawData[sliceOffset + indexInTriangle];
       };
 
-      /**
-       * Reconstrói uma matriz 2D completa para uma única fatia.
-       * Útil para compatibilidade com funções que esperam uma matriz completa.
-       * @param {number} sliceIndex O índice da fatia a ser reconstruída.
-       * @returns {Array<Array<number>>} A matriz 2D completa.
-       */
       const getSliceAsMatrix = (sliceIndex) => {
           const matrix = Array(numAtoms).fill(0).map(() => Array(numAtoms).fill(0));
           for (let i = 0; i < numAtoms; i++) {
               for (let j = i; j < numAtoms; j++) {
                   const value = getDCCMValue(sliceIndex, i, j);
                   matrix[i][j] = value;
-                  matrix[j][i] = value; // Espelha o valor
+                  matrix[j][i] = value;
               }
           }
           return matrix;
       };
-
-    //   console.log(`Dados binários carregados: ${numSlices} fatias, ${numAtoms} átomos.`);
       
       return {
           numSlices,
@@ -82,7 +62,7 @@ class DccmFunctions {
           getSliceAsMatrix
       };
     }
-    // misc
+
     createRandomDCCM( size ) {
         var random_DCCM_columns = new Array();
         for (var i = 0; i < size; i++) {
@@ -95,7 +75,6 @@ class DccmFunctions {
         return random_DCCM_columns
     }
 
-    // particle stuff
     createParticleSlice( slice, pos_x, pos_y, pos_z, step_length, particle_size, neg_tre, pos_tre ) {
         const particle_geometry = new THREE.BufferGeometry();
         
