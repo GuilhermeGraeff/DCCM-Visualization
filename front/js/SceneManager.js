@@ -6,9 +6,11 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
-import DccmSlice from './sceneSubjects/DccmSliceRefactor' // Mudar aquiiiiiiiiiii
+import DccmSlice from './sceneSubjects/DccmSlice' // Mudar aquiiiiiiiiiii
 import GroundPlane from './sceneSubjects/GroundPlane'
 import TextTest from './sceneSubjects/TextTest'
+
+import simulationData from './simulation_data_files_path.js';
 
 // import WebGPURenderer from 'three/src/renderers/webgpu/WebGPURenderer.js';
 
@@ -19,7 +21,10 @@ function SceneManager() {
         width: window.innerWidth,
         height: window.innerHeight
     }
-    
+    let simulationController = null;
+    let replicaController = null;
+    let fileController = null;
+
     const scene = buildScene();
     const renderer = buildRender(screenDimensions);
     const camera = buildCamera(screenDimensions);
@@ -28,13 +33,22 @@ function SceneManager() {
     const panel = createPanel();
     var sceneSubjects = createSceneSubjects(scene);
     var settings;
+   
+
 
     
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshNormalMaterial();
+    const objectToOrbit = new THREE.Mesh(geometry, material);
+    objectToOrbit.position.set(15, 15, 0);
+    scene.add(objectToOrbit);
+    controls.target.copy(objectToOrbit.position);
+    scene.remove(objectToOrbit);
+
     function buildScene() {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x959595);
         scene.backgroundBlurriness = 0
-
         return scene;
     }
 
@@ -72,7 +86,10 @@ function SceneManager() {
         const nearPlane = 0.1;
         const farPlane = 1000; 
         const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-        camera.position.z = 2
+        camera.position.x = 15
+        camera.position.y = 20
+        camera.position.z = 30
+
 
         return camera;
     }
@@ -88,7 +105,7 @@ function SceneManager() {
             new GeneralLights(scene),
             new AxisMark(scene),
             new GroundPlane(scene),
-            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers']),
+            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers'], simulationData[settings['simulation']][settings['replica']][settings['fileType']]),
         ];
         
         return sceneSubjects;
@@ -103,22 +120,32 @@ function SceneManager() {
 
     function createPanel() {
         const panel = new GUI( { width: 310 } );
-        
-        var fs = require('fs');
-        var files = fs.readdirSync('../data');
-        console.log('files')
-        console.log(files)
+
         const folder1 = panel.addFolder( 'DCCM settings' );
+
+        const folder2 = panel.addFolder( 'Simulation Data' );
+        
+        const simulationNames = Object.keys(simulationData);
+        const initialSim = simulationNames[0];
+        const replicaNames = Object.keys(simulationData[initialSim]);
+        const initialRep = replicaNames[0];
+        const fileNames = Object.keys(simulationData[initialSim][initialRep]);
+        const initialFile = fileNames[0];
+
+
 
         settings = {
             'with ligand': false,
-            'modify positive threshold': 0.75,
-            'modify negative threshold': 0.75,
+            'modify positive threshold': 0.4,
+            'modify negative threshold': 0.4,
             'selected slice': -1,
             'display unselected layers': true,
             'removeObjects': removeObjects,
             'recreateScene': recreateScene,
             'applyChanges': applyChanges,
+            'simulation': initialSim,
+            'replica': initialRep,
+            'fileType': initialFile,
         };
         
         folder1.add( settings, 'with ligand').onChange( applyChanges );
@@ -129,20 +156,22 @@ function SceneManager() {
         folder1.add( settings, 'removeObjects' );
         folder1.add( settings, 'recreateScene' );
         folder1.add( settings, 'applyChanges' );
-
+       
+        simulationController = folder2.add(settings, 'simulation', simulationNames).name('Simulation');
+        replicaController = folder2.add(settings, 'replica', replicaNames).name('Replica');
+        fileController = folder2.add(settings, 'fileType', fileNames).name('File Type');
+    
+        // ✅ STEP 2: NOW, assign the onChange handlers
+        simulationController.onChange(applyChanges);
+        replicaController.onChange(applyChanges);
+        fileController.onChange(applyChanges);
 
         folder1.open();
+        folder2.open();
 
         return panel
     }
-
-    function select( condition ) {
-
-        console.log('display unselected layers', condition)
-
-    }
-
-
+    
     function removeObjects() {
         console.log(sceneSubjects)
         sceneSubjects[3].disposePoints(scene,sceneSubjects[3].parentObject)
@@ -158,7 +187,7 @@ function SceneManager() {
             new GeneralLights(scene),
             new AxisMark(scene),
             new GroundPlane(scene),
-            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers']),
+            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers'], simulationData[settings['simulation']][settings['replica']][settings['fileType']]),
         ];
         renderer.render(scene, camera);
     }
@@ -173,7 +202,7 @@ function SceneManager() {
             new GeneralLights(scene),
             new AxisMark(scene),
             new GroundPlane(scene),
-            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers']),
+            new DccmSlice(scene, settings['with ligand'], settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers'], simulationData[settings['simulation']][settings['replica']][settings['fileType']]),
         ];
         renderer.render(scene, camera);
     }
@@ -192,6 +221,8 @@ function SceneManager() {
     this.update = function() {
         
         const elapsedTime = clock.getElapsedTime();
+
+        controls.update();
 
         for(let i=0; i<sceneSubjects.length; i++){
             if (Array.isArray(sceneSubjects[i])){

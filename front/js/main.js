@@ -1,4 +1,4 @@
-import SceneManager from './SceneManagerRefactor.js'
+import SceneManager from './SceneManager.js'
 
 const sceneManager = new SceneManager();
 
