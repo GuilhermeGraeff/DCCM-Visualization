@@ -8,7 +8,7 @@ import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
 import DccmSlice from './sceneSubjects/DccmSlice' // Mudar aquiiiiiiiiiii
 import GroundPlane from './sceneSubjects/GroundPlane'
-import TextTest from './sceneSubjects/TextTest'
+// import TextTest from './sceneSubjects/TextTest'
 
 import simulationData from './simulation_data_files_path.js';
 
