@@ -1,3 +1,10 @@
+/* 
+
+Iluminação simples da cena
+
+*/
+
+
 import * as THREE from 'three'
 
 function GeneralLights(scene) {

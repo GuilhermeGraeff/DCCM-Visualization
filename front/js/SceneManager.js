@@ -1,4 +1,15 @@
+/*
 
+Arquivo responsável por gerenciar a cena como um todo, responsável por:
+    Painel de alteração de parâmetros
+    Cena
+    Câmera
+    Controles
+    Status
+    Inclusive o plano e as fatias próprias do método
+    Aplicação das mudanças enfrentadas pelo painel (atualização de tresholds, sistemas, réplicas e tamanho d fatias)
+
+*/
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module'
@@ -6,7 +17,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
-import DccmSlice from './sceneSubjects/DccmSlice' // Mudar aquiiiiiiiiiii
+import DccmSlice from './sceneSubjects/DccmSlice'
 import GroundPlane from './sceneSubjects/GroundPlane'
 // import TextTest from './sceneSubjects/TextTest'
 
@@ -30,16 +41,17 @@ function SceneManager() {
     const camera = buildCamera(screenDimensions);
     const controls = buildControls();
     const stats = createStats();
+ 
+
+    let currentFilePath = null;
+    let sceneSubjects;
+    let settings;
+
     const panel = createPanel();
-    var sceneSubjects = createSceneSubjects(scene);
-    var settings;
-   
 
+    sceneSubjects = createSceneSubjects(scene); 
 
-    // Set camera to orbit the center of the visualization
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshNormalMaterial();
-    const objectToOrbit = new THREE.Mesh(geometry, material);
+    const objectToOrbit = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
     objectToOrbit.position.set(15, 15, 0);
     scene.add(objectToOrbit);
     controls.target.copy(objectToOrbit.position);
@@ -81,28 +93,31 @@ function SceneManager() {
 
     function createSceneSubjects(scene) {
         
-        var sceneSubjects = [
+        currentFilePath = simulationData[settings.simulation][settings.replica][settings.fileType];
+
+        const groundPlane = new GroundPlane(scene);
+
+        const dccmSubject = new DccmSlice(scene, settings, currentFilePath, groundPlane);
+
+        var subjects = [
             new GeneralLights(scene),
             new AxisMark(scene),
-            new GroundPlane(scene),
-            new DccmSlice(scene, settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers'], simulationData[settings['simulation']][settings['replica']][settings['fileType']]),
+            groundPlane,
+            dccmSubject,
         ];
         
-        return sceneSubjects;
+        return subjects;
     }
 
     function createStats() {
         const stats = Stats()
         document.body.appendChild(stats.dom)
-
         return stats;
     }
 
     function createPanel() {
         const panel = new GUI( { width: 310 } );
-
         const folder1 = panel.addFolder( 'DCCM settings' );
-
         const folder2 = panel.addFolder( 'Simulation Data' );
         
         const simulationNames = Object.keys(simulationData);
@@ -117,7 +132,6 @@ function SceneManager() {
             'modify negative threshold': 0.4,
             'selected slice': -1,
             'display unselected layers': true,
-            'removeObjects': removeObjects,
             'applyChanges': applyChanges,
             'simulation': initialSim,
             'replica': initialRep,
@@ -128,7 +142,6 @@ function SceneManager() {
         folder1.add( settings, 'modify negative threshold', 0, 1, 0.05 ).onChange( applyChanges );
         folder1.add( settings, 'selected slice', -1, 50, 1 ).onChange( applyChanges );
         folder1.add( settings, 'display unselected layers' ).onChange( applyChanges );
-        folder1.add( settings, 'removeObjects' );
         folder1.add( settings, 'applyChanges' );
        
         simulationController = folder2.add(settings, 'simulation', simulationNames).name('Simulation');
@@ -145,63 +158,40 @@ function SceneManager() {
         return panel
     }
     
-    function removeObjects() {
-        sceneSubjects[3].disposePoints(scene,sceneSubjects[3].parentObject)
-        while(scene.children.length > 0){ 
-            scene.remove(scene.children[0]); 
-        }
-        console.log(scene.children)
-        renderer.render(scene, camera);
-    }
-
-
     function applyChanges() {
 
-        sceneSubjects[3].disposePoints(scene,sceneSubjects[3].parentObject)
-        while(scene.children.length > 0){ 
-            scene.remove(scene.children[0]); 
-        }
-        sceneSubjects = [
-            new GeneralLights(scene),
-            new AxisMark(scene),
-            new GroundPlane(scene, sceneSubjects[3].number_of_residues, sceneSubjects[3].number_of_slices),
-            new DccmSlice(scene, settings['modify negative threshold'], settings['modify positive threshold'], settings['selected slice'], settings['display unselected layers'], simulationData[settings['simulation']][settings['replica']][settings['fileType']]),
-        ];
-        renderer.render(scene, camera);
-    }
-    
+        const newFilePath = simulationData[settings.simulation][settings.replica][settings.fileType];
+        const dccmSlice = sceneSubjects[3];
+        const groundPlane = sceneSubjects[2];
 
-    // Dccm management:
+        if (newFilePath !== currentFilePath) {
+            currentFilePath = newFilePath;
+            if (dccmSlice) {
+                dccmSlice.dispose(scene);
+            }
+            if (groundPlane) {
+                groundPlane.hide();
+            }
 
-    this.update = function() {
-
-        const elapsedTime = clock.getElapsedTime();
-
-        controls.update();
-
-        for(let i=0; i<sceneSubjects.length; i++){
-            if (Array.isArray(sceneSubjects[i])){
-                for(let j=0; j<sceneSubjects[i].length; j++){
-                    sceneSubjects[i][j].update(elapsedTime);
-                }
-            } else {
-                sceneSubjects[i].update(elapsedTime);
+            sceneSubjects[3] = new DccmSlice(scene, settings, currentFilePath, groundPlane);
+        } else {
+            if (dccmSlice) {
+                dccmSlice.updateFromSettings(settings);
             }
         }
-        stats.begin()
+    }
 
-        stats.end()
-
+    this.update = function() {
+        stats.update();
+        controls.update();
         renderer.render(scene, camera);
-
-        stats.update()
     }
 
     this.onWindowResize = function() {
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
         renderer.setSize(window.innerWidth, window.innerHeight)
-        render()
+        renderer.render(scene, camera);
     }
 }
 

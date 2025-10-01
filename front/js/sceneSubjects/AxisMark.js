@@ -1,3 +1,9 @@
+/* 
+
+Aqui está a construção do indicativo dos eixos que (semi-retas) que cruzam a origem (0,0,0) da visualização da aplicação. 
+
+*/
+
 import * as THREE from 'three'
 
 function AxisMark(scene) {

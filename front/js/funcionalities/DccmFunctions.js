@@ -10,13 +10,12 @@ class DccmFunctions {
       }
       const arrayBuffer = await response.arrayBuffer();
 
-      // 1. Read Header
+
       const headerView = new DataView(arrayBuffer, 0, 12);
       const numSlices = headerView.getUint32(0, true);
       const numAtoms = headerView.getUint32(4, true);
       const dataTypeId = headerView.getUint32(8, true);
 
-      // 2. Read Payload
       let rawData;
       const dataOffset = 12; // Data after Header
 
@@ -30,12 +29,10 @@ class DccmFunctions {
 
 
       const getDCCMValue = (sliceIndex, i, j) => {
-          // Garante que i <= j para acessar o triângulo superior
           if (i > j) {
-              [i, j] = [j, i]; // Troca os valores
+              [i, j] = [j, i]; 
           }
 
-          // Fórmula para encontrar o índice no array 1D do triângulo superior
           const sliceOffset = sliceIndex * numElementsPerSlice;
           const indexInTriangle = (numAtoms * i - (i * (i - 1)) / 2) + (j - i);
           
@@ -75,7 +72,7 @@ class DccmFunctions {
         return random_DCCM_columns
     }
 
-    createParticleSlice( slice, pos_x, pos_y, pos_z, step_length, particle_size, neg_tre, pos_tre ) {
+    createParticleSlice( slice, pos_x, pos_y, pos_z, step_length, particle_size, negative_treshold, positive_treshold ) {
         const particle_geometry = new THREE.BufferGeometry();
         
         const positions = [];
@@ -83,7 +80,7 @@ class DccmFunctions {
         
         for (var residue = 0; residue < slice.length; residue++) {
             for (var j = 0; j < slice[residue].length; j++) {
-                if ((slice[residue][j] > -neg_tre && (slice[residue][j] < pos_tre))) {
+                if ((slice[residue][j] > -negative_treshold && (slice[residue][j] < positive_treshold))) {
                     continue
                 }
                 positions.push( pos_x+(residue*step_length), pos_y+(j*step_length), pos_z );
@@ -103,9 +100,9 @@ class DccmFunctions {
     }
 
     gradientColorForCorrelationForParticles(value) {
-        const blue = { r: 0, g: 0, b: 255 };  // Azul
-        const white = { r: 255, g: 255, b: 255 }; // Branco
-        const red = { r: 255, g: 0, b: 0 };    // Vermelho
+        const blue = { r: 0, g: 0, b: 255 };
+        const white = { r: 255, g: 255, b: 255 };
+        const red = { r: 255, g: 0, b: 0 }; 
       
         let resultColor;
       

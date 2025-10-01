@@ -1,9 +1,14 @@
-// generate-manifest.js
+/*
+
+Este script e responsável por mapear os arquivos binários referentes às simulações, localiza sistemas, réplicas e diferentes tamanhos de fatias do método
+Ele é rodado de forma manual utilizando o node ('node generate_data_files_path.js'), este deve ser rodado após a obtenção dos dados que é tarefa do 'back'.
+
+*/
 const fs = require('fs');
 const path = require('path');
 
-const dataDir = path.join(__dirname, 'data'); // Path to your data folder
-const outputFilePath = path.join(__dirname, 'js', 'simulation_data_files_path.js'); // Where the output file will be saved
+const dataDir = path.join(__dirname, 'data'); 
+const outputFilePath = path.join(__dirname, 'js', 'simulation_data_files_path.js'); 
 
 const simulationData = {};
 
