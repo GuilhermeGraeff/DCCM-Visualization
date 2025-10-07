@@ -5,7 +5,7 @@ import DccmFunctions from '../funcionalities/DccmFunctions' // Mudar Aquiiiiiii
 
 
 class DccmSlice {
-	constructor(scene, initialSettings, correlation_file_path, groundPlane) {
+	constructor(scene, initialSettings, correlation_file_path, dynamicBackground) {
 
         this.dccmTools = new DccmFunctions();
         this.parentObject = new THREE.Object3D();
@@ -13,21 +13,24 @@ class DccmSlice {
         this.textMeshes = [];
         this.dccmData = null;
         this.isInitialized = false;
-		this.groundPlane = groundPlane;
+		this.dynamicBackground = dynamicBackground;
+
 
         this._initialize(scene, initialSettings, correlation_file_path);
     }
 
 	async _initialize(scene, settings, dataUrl) {
         try {
+			console.log(dataUrl)
             const dccmData = await this.dccmTools.loadBinaryDCCM(dataUrl);
+			
             this.dccmData = dccmData;
-
+			console.log('residue_names', dccmData.residueNames)
             const fontLoader = new FontLoader();
             fontLoader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json', (font) => {
                 
-				if (this.groundPlane) {
-					this.groundPlane.updateDimensions(dccmData.numAtoms, dccmData.numSlices);
+                if (this.dynamicBackground) {
+					this.dynamicBackground.updateDimensions(dccmData.numAtoms, dccmData.numSlices);
 				}
 
                 for (let i = 0; i < dccmData.numSlices; i++) {
@@ -42,13 +45,13 @@ class DccmSlice {
                     const points = new THREE.Points(geometry, material);
 
                     const textGeometry = new TextGeometry(`Slice ${i}`, {
-                        depth: 0.001, size: 0.055, font: font
+                        depth: 0.00000001, size: 0.055, font: font
                     });
                     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x303030 });
                     const textMesh = new THREE.Mesh(textGeometry, textMaterial);
                     textMesh.position.set(
                         (dccmData.numAtoms * 0.09427) - 0.30,
-                        0,
+                        0.001,
                         -0.97 - (i * 0.09 * 1.112)
                     );
                     textMesh.rotateX(-Math.PI / 2);
@@ -57,6 +60,24 @@ class DccmSlice {
                     scene.add(textMesh);
                     
                     this.slicePoints.push({ points, sliceIndex: i, sliceMatrix });
+                    this.textMeshes.push(textMesh);
+                }
+
+				for (let i = 0; i < dccmData.numAtoms; i++) {
+                    const textGeometry = new TextGeometry(dccmData.residueNames[i], {
+                        depth: 0.00000001, size: 0.055, font: font
+                    });
+                    const textMaterial = new THREE.MeshBasicMaterial({ color: 0x303030 });
+                    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                    textMesh.position.set(
+                        29.32 - (i * 0.09),
+                        0.001, // verde
+                        -0.87 //
+                    );
+                    textMesh.rotateX(-Math.PI / 2);
+                    textMesh.rotateZ(-Math.PI / 2);
+
+                    scene.add(textMesh);
                     this.textMeshes.push(textMesh);
                 }
 
@@ -72,8 +93,8 @@ class DccmSlice {
 
 	updateFromSettings(settings) {
         if (!this.isInitialized) return;
-		if (this.groundPlane) {
-			this.groundPlane.updateDimensions(this.dccmData.numAtoms, this.dccmData.numSlices);
+        if (this.dynamicBackground) {
+			this.dynamicBackground.updateDimensions(this.dccmData.numAtoms, this.dccmData.numSlices);
 		}
         const negative_treshold = settings['modify negative threshold'];
         const positive_treshold = settings['modify positive threshold'];

@@ -18,7 +18,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
 import DccmSlice from './sceneSubjects/DccmSlice'
-import GroundPlane from './sceneSubjects/GroundPlane'
+import DynamicBackground from './sceneSubjects/DynamicBackground'
 // import TextTest from './sceneSubjects/TextTest'
 
 import simulationData from './simulation_data_files_path.js';
@@ -95,14 +95,15 @@ function SceneManager() {
         
         currentFilePath = simulationData[settings.simulation][settings.replica][settings.fileType];
 
-        const groundPlane = new GroundPlane(scene);
+        const dynamicBackground = new DynamicBackground(scene);
 
-        const dccmSubject = new DccmSlice(scene, settings, currentFilePath, groundPlane);
+
+        const dccmSubject = new DccmSlice(scene, settings, currentFilePath, dynamicBackground);
 
         var subjects = [
             new GeneralLights(scene),
             new AxisMark(scene),
-            groundPlane,
+            dynamicBackground,
             dccmSubject,
         ];
         
@@ -162,18 +163,18 @@ function SceneManager() {
 
         const newFilePath = simulationData[settings.simulation][settings.replica][settings.fileType];
         const dccmSlice = sceneSubjects[3];
-        const groundPlane = sceneSubjects[2];
+        const dynamicBackground = sceneSubjects[2];
 
         if (newFilePath !== currentFilePath) {
             currentFilePath = newFilePath;
             if (dccmSlice) {
                 dccmSlice.dispose(scene);
             }
-            if (groundPlane) {
-                groundPlane.hide();
-            }
 
-            sceneSubjects[3] = new DccmSlice(scene, settings, currentFilePath, groundPlane);
+            if (dynamicBackground) {
+                dynamicBackground.hide();
+            }
+            sceneSubjects[3] = new DccmSlice(scene, settings, currentFilePath, dynamicBackground);
         } else {
             if (dccmSlice) {
                 dccmSlice.updateFromSettings(settings);

@@ -4,60 +4,75 @@ import {Text} from 'troika-three-text'
 class DccmFunctions {
 
     async loadBinaryDCCM(url) {
-      const response = await fetch(url);
-      if (!response.ok) {
-          throw new Error(`Erro de HTTP ao carregar ${url}: ${response.status}`);
-      }
-      const arrayBuffer = await response.arrayBuffer();
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erro de HTTP ao carregar ${url}: ${response.status}`);
+        }
+        const arrayBuffer = await response.arrayBuffer();
 
 
-      const headerView = new DataView(arrayBuffer, 0, 12);
-      const numSlices = headerView.getUint32(0, true);
-      const numAtoms = headerView.getUint32(4, true);
-      const dataTypeId = headerView.getUint32(8, true);
+        const headerView = new DataView(arrayBuffer, 0, 12);
+        const numSlices = headerView.getUint32(0, true);
+        const numAtoms = headerView.getUint32(4, true);
+        const dataTypeId = headerView.getUint32(8, true);
 
-      let rawData;
-      const dataOffset = 12; // Data after Header
+        const namesOffset = 12; // Tamanho cabeçalho
+        const namesBlockSize = numAtoms * 4; // Nome dos resíduos
+        const residueNames = [];
+        const textDecoder = new TextDecoder('utf-8');
 
-      if (dataTypeId === 1) { // float32
-          rawData = new Float32Array(arrayBuffer, dataOffset);
-      } else {
-          throw new Error(`Tipo de dado não suportado: ${dataTypeId}`);
-      }
+        for (let i = 0; i < numAtoms; i++) {
+            const start = namesOffset + (i * 4);
+            
+            const nameBytesView = new DataView(arrayBuffer, start, 4);
+            
+            const name = textDecoder.decode(nameBytesView).replace(/\0/g, '');
+            residueNames.push(name);
+        }
 
-      const numElementsPerSlice = (numAtoms * (numAtoms + 1)) / 2;
+        const dataOffset = namesOffset + namesBlockSize;
+
+        let rawData;
+        if (dataTypeId === 1) { // float32
+            rawData = new Float32Array(arrayBuffer, dataOffset);
+        } else {
+            throw new Error(`Tipo de dado não suportado: ${dataTypeId}`);
+        }
+
+        const numElementsPerSlice = (numAtoms * (numAtoms + 1)) / 2;
 
 
-      const getDCCMValue = (sliceIndex, i, j) => {
-          if (i > j) {
-              [i, j] = [j, i]; 
-          }
+        const getDCCMValue = (sliceIndex, i, j) => {
+            if (i > j) {
+                [i, j] = [j, i]; 
+            }
 
-          const sliceOffset = sliceIndex * numElementsPerSlice;
-          const indexInTriangle = (numAtoms * i - (i * (i - 1)) / 2) + (j - i);
-          
-          return rawData[sliceOffset + indexInTriangle];
-      };
+            const sliceOffset = sliceIndex * numElementsPerSlice;
+            const indexInTriangle = (numAtoms * i - (i * (i - 1)) / 2) + (j - i);
+            
+            return rawData[sliceOffset + indexInTriangle];
+        };
 
-      const getSliceAsMatrix = (sliceIndex) => {
-          const matrix = Array(numAtoms).fill(0).map(() => Array(numAtoms).fill(0));
-          for (let i = 0; i < numAtoms; i++) {
-              for (let j = i; j < numAtoms; j++) {
-                  const value = getDCCMValue(sliceIndex, i, j);
-                  matrix[i][j] = value;
-                  matrix[j][i] = value;
-              }
-          }
-          return matrix;
-      };
-      
-      return {
-          numSlices,
-          numAtoms,
-          rawData,
-          getDCCMValue,
-          getSliceAsMatrix
-      };
+        const getSliceAsMatrix = (sliceIndex) => {
+            const matrix = Array(numAtoms).fill(0).map(() => Array(numAtoms).fill(0));
+            for (let i = 0; i < numAtoms; i++) {
+                for (let j = i; j < numAtoms; j++) {
+                    const value = getDCCMValue(sliceIndex, i, j);
+                    matrix[i][j] = value;
+                    matrix[j][i] = value;
+                }
+            }
+            return matrix;
+        };
+        
+        return {
+            numSlices,
+            numAtoms,
+            residueNames,
+            rawData,
+            getDCCMValue,
+            getSliceAsMatrix
+        };
     }
 
     createRandomDCCM( size ) {

@@ -38,7 +38,7 @@ class GroundPlane {
         this.mesh.geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
         this.mesh.geometry.computeVertexNormals();
 
-        this.mesh.visible = true;
+        // this.mesh.visible = true;
     }
     
     hide() {
