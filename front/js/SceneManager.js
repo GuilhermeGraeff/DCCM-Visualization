@@ -37,12 +37,18 @@ function SceneManager() {
     let replicaController = null;
     let fileController = null;
 
+    
     const scene = buildScene();
     const renderer = buildRender(screenDimensions);
     const camera = buildCamera(screenDimensions);
     const controls = buildControls();
     const stats = createStats();
- 
+
+    let visualizacaoAtiva = false;
+
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const startButton = document.getElementById('start-button');
+
     const raycaster = new THREE.Raycaster();
     raycaster.params.Points.threshold = 0.07; 
     const mouse = new THREE.Vector2();
@@ -58,11 +64,18 @@ function SceneManager() {
     document.body.appendChild(tooltipDiv);
     window.addEventListener('pointermove', onPointerMove);
 
+    startButton.addEventListener('click', () => {
+        welcomeScreen.classList.add('hidden');
+        panel.show();
+        visualizacaoAtiva = true;
+    });
+
     let currentFilePath = null;
     let sceneSubjects;
     let settings;
 
     const panel = createPanel();
+    panel.hide();
 
     sceneSubjects = createSceneSubjects(scene); 
 
@@ -214,36 +227,36 @@ function SceneManager() {
         // Pega todos os objetos de pontos da sua visualização
         const pointObjects = sceneSubjects[3] ? sceneSubjects[3].slicePoints.map(sp => sp.points) : [];
         const intersects = raycaster.intersectObjects(pointObjects, false);
+        if (visualizacaoAtiva) {
+            if (intersects.length > 0) {
+                const intersection = intersects[0];
+                const pointIndex = intersection.index; // O índice do ponto! 🎯
+                const intersectedObject = intersection.object;
 
-        if (intersects.length > 0) {
-            const intersection = intersects[0];
-            const pointIndex = intersection.index; // O índice do ponto! 🎯
-            const intersectedObject = intersection.object;
+                // Encontra a qual fatia (slice) o objeto intersectado pertence
+                const sourceSlice = sceneSubjects[3].slicePoints.find(sp => sp.points === intersectedObject);
+                
+                if (sourceSlice && sourceSlice.pointData[pointIndex]) {
+                    const data = sourceSlice.pointData[pointIndex];
+                    const resNames = sceneSubjects[3].dccmData.residueNames;
 
-            // Encontra a qual fatia (slice) o objeto intersectado pertence
-            const sourceSlice = sceneSubjects[3].slicePoints.find(sp => sp.points === intersectedObject);
-            
-            if (sourceSlice && sourceSlice.pointData[pointIndex]) {
-                const data = sourceSlice.pointData[pointIndex];
-                const resNames = sceneSubjects[3].dccmData.residueNames;
-
-                // Monta o texto do tooltip
-                tooltipDiv.style.display = 'block';
-                tooltipDiv.innerHTML = `
-                    Slice: ${sourceSlice.sliceIndex}<br>
-                    Correlação: ${data.value}<br>
-                    Resíduos: ${resNames[data.residueI]} ↔ ${resNames[data.residueJ]}
-                `;
-                // Posiciona o tooltip um pouco acima do ponteiro do mouse
-                tooltipDiv.style.left = `${mouseClientX + 10}px`;
-                tooltipDiv.style.top = `${mouseClientY - 30}px`;
+                    // Monta o texto do tooltip
+                    tooltipDiv.style.display = 'block';
+                    tooltipDiv.innerHTML = `
+                        Slice: ${sourceSlice.sliceIndex}<br>
+                        Correlação: ${data.value}<br>
+                        Resíduos: ${resNames[data.residueI]} ↔ ${resNames[data.residueJ]}
+                    `;
+                    // Posiciona o tooltip um pouco acima do ponteiro do mouse
+                    tooltipDiv.style.left = `${mouseClientX + 10}px`;
+                    tooltipDiv.style.top = `${mouseClientY - 30}px`;
+                } else {
+                    tooltipDiv.style.display = 'none';
+                }
             } else {
                 tooltipDiv.style.display = 'none';
             }
-        } else {
-            tooltipDiv.style.display = 'none';
         }
-
         renderer.render(scene, camera);
     }
 

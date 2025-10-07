@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import DccmFunctions from '../funcionalities/DccmFunctions' // Mudar Aquiiiiiii
+import DccmFunctions from '../funcionalities/DccmFunctions'
 
 
 class DccmSlice {
@@ -14,7 +14,6 @@ class DccmSlice {
         this.dccmData = null;
         this.isInitialized = false;
 		this.dynamicBackground = dynamicBackground;
-
 
         this._initialize(scene, initialSettings, correlation_file_path);
     }
