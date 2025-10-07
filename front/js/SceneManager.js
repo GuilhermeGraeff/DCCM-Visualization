@@ -44,7 +44,7 @@ function SceneManager() {
     const stats = createStats();
  
     const raycaster = new THREE.Raycaster();
-    raycaster.params.Points.threshold = 0.1; 
+    raycaster.params.Points.threshold = 0.07; 
     const mouse = new THREE.Vector2();
 
     let mouseClientX = 0;
