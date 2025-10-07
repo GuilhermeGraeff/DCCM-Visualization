@@ -92,15 +92,22 @@ class DccmFunctions {
         
         const positions = [];
         const colors = [];
-        
+        const pointData = []; 
+
         for (var residue = 0; residue < slice.length; residue++) {
             for (var j = 0; j < slice[residue].length; j++) {
+
                 if ((slice[residue][j] > -negative_treshold && (slice[residue][j] < positive_treshold))) {
                     continue
                 }
                 positions.push( pos_x+(residue*step_length), pos_y+(j*step_length), pos_z );
                 var color_gradient = this.gradientColorForCorrelationForParticles(slice[residue][j])
                 colors.push( color_gradient[0]/255.0, color_gradient[1]/255.0, color_gradient[2]/255.0)
+                pointData.push({
+                    residueI: residue,
+                    residueJ: j,
+                    value: slice[residue][j].toFixed(4) // Arredonda para 4 casas decimais
+                });
             }
         }
         
@@ -111,7 +118,7 @@ class DccmFunctions {
         
         const particle_material = new THREE.PointsMaterial( { size: particle_size, vertexColors: true } );
         
-        return [particle_geometry, particle_material]
+        return [particle_geometry, particle_material, pointData]
     }
 
     gradientColorForCorrelationForParticles(value) {

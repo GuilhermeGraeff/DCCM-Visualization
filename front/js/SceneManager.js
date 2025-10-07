@@ -14,6 +14,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 import GeneralLights from './sceneSubjects/GeneralLights';
 import AxisMark from './sceneSubjects/AxisMark'
@@ -42,6 +43,20 @@ function SceneManager() {
     const controls = buildControls();
     const stats = createStats();
  
+    const raycaster = new THREE.Raycaster();
+    raycaster.params.Points.threshold = 0.1; 
+    const mouse = new THREE.Vector2();
+
+    let mouseClientX = 0;
+    let mouseClientY = 0;
+
+    
+    const tooltipDiv = document.createElement('div');
+    tooltipDiv.className = 'tooltip'; // Antes era 'dccm-label'
+    tooltipDiv.style.position = 'absolute';
+    tooltipDiv.style.display = 'none'; // Começa escondido
+    document.body.appendChild(tooltipDiv);
+    window.addEventListener('pointermove', onPointerMove);
 
     let currentFilePath = null;
     let sceneSubjects;
@@ -57,6 +72,14 @@ function SceneManager() {
     controls.target.copy(objectToOrbit.position);
     scene.remove(objectToOrbit);
 
+    function onPointerMove(event) {
+        // Normaliza a posição do mouse (de -1 a +1)
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+        mouseClientX = event.clientX;
+        mouseClientY = event.clientY;
+    }
 
     function buildScene() {
         const scene = new THREE.Scene();
@@ -185,6 +208,42 @@ function SceneManager() {
     this.update = function() {
         stats.update();
         controls.update();
+
+        raycaster.setFromCamera(mouse, camera);
+
+        // Pega todos os objetos de pontos da sua visualização
+        const pointObjects = sceneSubjects[3] ? sceneSubjects[3].slicePoints.map(sp => sp.points) : [];
+        const intersects = raycaster.intersectObjects(pointObjects, false);
+
+        if (intersects.length > 0) {
+            const intersection = intersects[0];
+            const pointIndex = intersection.index; // O índice do ponto! 🎯
+            const intersectedObject = intersection.object;
+
+            // Encontra a qual fatia (slice) o objeto intersectado pertence
+            const sourceSlice = sceneSubjects[3].slicePoints.find(sp => sp.points === intersectedObject);
+            
+            if (sourceSlice && sourceSlice.pointData[pointIndex]) {
+                const data = sourceSlice.pointData[pointIndex];
+                const resNames = sceneSubjects[3].dccmData.residueNames;
+
+                // Monta o texto do tooltip
+                tooltipDiv.style.display = 'block';
+                tooltipDiv.innerHTML = `
+                    Slice: ${sourceSlice.sliceIndex}<br>
+                    Correlação: ${data.value}<br>
+                    Resíduos: ${resNames[data.residueI]} ↔ ${resNames[data.residueJ]}
+                `;
+                // Posiciona o tooltip um pouco acima do ponteiro do mouse
+                tooltipDiv.style.left = `${mouseClientX + 10}px`;
+                tooltipDiv.style.top = `${mouseClientY - 30}px`;
+            } else {
+                tooltipDiv.style.display = 'none';
+            }
+        } else {
+            tooltipDiv.style.display = 'none';
+        }
+
         renderer.render(scene, camera);
     }
 

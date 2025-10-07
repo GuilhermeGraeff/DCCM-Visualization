@@ -36,7 +36,7 @@ class DccmSlice {
                 for (let i = 0; i < dccmData.numSlices; i++) {
                     const sliceMatrix = dccmData.getSliceAsMatrix(i);
 
-                    const [geometry, material] = this.dccmTools.createParticleSlice(
+                    const [geometry, material, pointData] = this.dccmTools.createParticleSlice(
                         sliceMatrix, 1, 0.05, (-1) - (i * 0.1), 0.09, 0.022, 
                         settings['modify negative threshold'], 
                         settings['modify positive threshold']
@@ -59,7 +59,7 @@ class DccmSlice {
                     this.parentObject.add(points);
                     scene.add(textMesh);
                     
-                    this.slicePoints.push({ points, sliceIndex: i, sliceMatrix });
+                    this.slicePoints.push({ points, sliceIndex: i, sliceMatrix, pointData });
                     this.textMeshes.push(textMesh);
                 }
 
