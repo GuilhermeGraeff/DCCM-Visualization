@@ -5,7 +5,7 @@ import DccmFunctions from '../funcionalities/DccmFunctions'
 
 
 class DccmSlice {
-	constructor(scene, initialSettings, correlation_file_path, dynamicBackground) {
+	constructor(scene, initialSettings, correlation_file_path, dynamicBackground, onDataLoadedCallback) {
 
         this.dccmTools = new DccmFunctions();
         this.parentObject = new THREE.Object3D();
@@ -15,22 +15,26 @@ class DccmSlice {
         this.isInitialized = false;
 		this.dynamicBackground = dynamicBackground;
 
+        this.onDataLoaded = onDataLoadedCallback;
+
         this._initialize(scene, initialSettings, correlation_file_path);
     }
 
 	async _initialize(scene, settings, dataUrl) {
         try {
-			console.log(dataUrl)
             const dccmData = await this.dccmTools.loadBinaryDCCM(dataUrl);
 			
+            if (this.onDataLoaded) {
+                this.onDataLoaded(dccmData.numSlices);
+            }
+
+            if (this.dynamicBackground) {
+                this.dynamicBackground.updateDimensions(dccmData.numAtoms, dccmData.numSlices);
+            }
+
             this.dccmData = dccmData;
-			console.log('residue_names', dccmData.residueNames)
             const fontLoader = new FontLoader();
             fontLoader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json', (font) => {
-                
-                if (this.dynamicBackground) {
-					this.dynamicBackground.updateDimensions(dccmData.numAtoms, dccmData.numSlices);
-				}
 
                 for (let i = 0; i < dccmData.numSlices; i++) {
                     const sliceMatrix = dccmData.getSliceAsMatrix(i);

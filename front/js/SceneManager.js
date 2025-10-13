@@ -73,11 +73,14 @@ function SceneManager() {
     let currentFilePath = null;
     let sceneSubjects;
     let settings;
+    let sliceController = null;
 
     const panel = createPanel();
     panel.hide();
 
+
     sceneSubjects = createSceneSubjects(scene); 
+
 
     const objectToOrbit = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
     objectToOrbit.position.set(15, 15, 0);
@@ -127,6 +130,15 @@ function SceneManager() {
         return controls;
     }
 
+        
+    function updateSliceControllerMax(numSlices) {
+        sliceController.max(numSlices - 1);
+        if (settings['selected slice'] >= numSlices) {
+            settings['selected slice'] = -1;
+        }
+        sliceController.updateDisplay();
+    }
+
     function createSceneSubjects(scene) {
         
         currentFilePath = simulationData[settings.simulation][settings.replica][settings.fileType];
@@ -134,7 +146,7 @@ function SceneManager() {
         const dynamicBackground = new DynamicBackground(scene);
 
 
-        const dccmSubject = new DccmSlice(scene, settings, currentFilePath, dynamicBackground);
+        const dccmSubject = new DccmSlice(scene, settings, currentFilePath, dynamicBackground, updateSliceControllerMax);
 
         var subjects = [
             new GeneralLights(scene),
@@ -169,7 +181,6 @@ function SceneManager() {
             'modify negative threshold': 0.4,
             'selected slice': -1,
             'display unselected layers': true,
-            'applyChanges': applyChanges,
             'simulation': initialSim,
             'replica': initialRep,
             'fileType': initialFile,
@@ -177,9 +188,9 @@ function SceneManager() {
         
         folder1.add( settings, 'modify positive threshold', 0, 1, 0.05 ).onChange( applyChanges);
         folder1.add( settings, 'modify negative threshold', 0, 1, 0.05 ).onChange( applyChanges );
-        folder1.add( settings, 'selected slice', -1, 50, 1 ).onChange( applyChanges );
+        sliceController = folder1.add(settings, 'selected slice', -1, 1, 1);
+        sliceController.onChange(applyChanges); 
         folder1.add( settings, 'display unselected layers' ).onChange( applyChanges );
-        folder1.add( settings, 'applyChanges' );
        
         simulationController = folder2.add(settings, 'simulation', simulationNames).name('Simulation');
         replicaController = folder2.add(settings, 'replica', replicaNames).name('Replica');
@@ -194,7 +205,8 @@ function SceneManager() {
 
         return panel
     }
-    
+
+
     function applyChanges() {
 
         const newFilePath = simulationData[settings.simulation][settings.replica][settings.fileType];
@@ -210,7 +222,7 @@ function SceneManager() {
             if (dynamicBackground) {
                 dynamicBackground.hide();
             }
-            sceneSubjects[3] = new DccmSlice(scene, settings, currentFilePath, dynamicBackground);
+            sceneSubjects[3] = new DccmSlice(scene, settings, currentFilePath, dynamicBackground, updateSliceControllerMax);
         } else {
             if (dccmSlice) {
                 dccmSlice.updateFromSettings(settings);
@@ -230,7 +242,7 @@ function SceneManager() {
         if (visualizacaoAtiva) {
             if (intersects.length > 0) {
                 const intersection = intersects[0];
-                const pointIndex = intersection.index; // O índice do ponto! 🎯
+                const pointIndex = intersection.index; 
                 const intersectedObject = intersection.object;
 
                 // Encontra a qual fatia (slice) o objeto intersectado pertence

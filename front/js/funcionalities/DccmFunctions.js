@@ -110,11 +110,6 @@ class DccmFunctions {
             }
         }
         
-        console.log(pointData[0])
-        console.log(pointData[1])
-        console.log(pointData[2])
-        console.log(pointData[3])
-        console.log(pointData[4])
         
         particle_geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
         particle_geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );

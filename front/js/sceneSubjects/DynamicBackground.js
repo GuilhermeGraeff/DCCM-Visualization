@@ -145,7 +145,7 @@ class DynamicBackground {
     }
 
     update(time) {
-        console.log('GroundPlane updated')
+        console.log('DynamicBackground updated')
     }
 
     dispose(scene) {
