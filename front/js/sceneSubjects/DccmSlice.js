@@ -67,7 +67,7 @@ class DccmSlice {
                 }
 
 				for (let i = 0; i < dccmData.numAtoms; i++) {
-                    const textGeometry = new TextGeometry(dccmData.residueNames[i], {
+                    const textGeometry = new TextGeometry(dccmData.residueNames[(dccmData.numAtoms-1) - i], {
                         depth: 0.00000001, size: 0.055, font: font
                     });
                     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x303030 });
@@ -121,6 +121,7 @@ class DccmSlice {
 
             const positions = [];
             const colors = [];
+            const newPointData = []; 
             const step_length = 0.09;
             const pos_x = 1, pos_y = 0.05, pos_z = (-1) - (sliceIndex * 0.1);
 
@@ -133,9 +134,16 @@ class DccmSlice {
                     positions.push(pos_x + (residue * step_length), pos_y + (j * step_length), pos_z);
                     const color_gradient = this.dccmTools.gradientColorForCorrelationForParticles(value);
                     colors.push(color_gradient[0] / 255.0, color_gradient[1] / 255.0, color_gradient[2] / 255.0);
+                    newPointData.push({
+                        residueI: residue,
+                        residueJ: j,
+                        value: value.toFixed(4)
+                    });
                 }
             }
             
+            slice.pointData = newPointData;
+
             points.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
             points.geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
             points.geometry.attributes.position.needsUpdate = true;

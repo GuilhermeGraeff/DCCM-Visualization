@@ -236,9 +236,21 @@ function SceneManager() {
 
         raycaster.setFromCamera(mouse, camera);
 
-        // Pega todos os objetos de pontos da sua visualização
-        const pointObjects = sceneSubjects[3] ? sceneSubjects[3].slicePoints.map(sp => sp.points) : [];
-        const intersects = raycaster.intersectObjects(pointObjects, false);
+        let interactiveObjects = [];
+        if (sceneSubjects[3] && visualizacaoAtiva) {
+            const selectedSliceIndex = settings['selected slice'];
+            
+            if (selectedSliceIndex !== -1) {
+                const activeSlice = sceneSubjects[3].slicePoints.find(sp => sp.sliceIndex === selectedSliceIndex);
+                if (activeSlice) {
+                    interactiveObjects.push(activeSlice.points);
+                }
+            } else {
+                interactiveObjects = sceneSubjects[3].slicePoints.map(sp => sp.points);
+            }
+        }
+        
+        const intersects = raycaster.intersectObjects(interactiveObjects, false);
         if (visualizacaoAtiva) {
             if (intersects.length > 0) {
                 const intersection = intersects[0];
