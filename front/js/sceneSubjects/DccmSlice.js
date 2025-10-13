@@ -74,8 +74,8 @@ class DccmSlice {
                     const textMesh = new THREE.Mesh(textGeometry, textMaterial);
                     textMesh.position.set(
                         29.32 - (i * 0.09),
-                        0.001, // verde
-                        -0.87 //
+                        0.001, 
+                        -0.87 
                     );
                     textMesh.rotateX(-Math.PI / 2);
                     textMesh.rotateZ(-Math.PI / 2);
