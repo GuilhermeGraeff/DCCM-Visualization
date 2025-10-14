@@ -47,8 +47,9 @@ Como rodar a aplicação de visualização após o pré-processamento dos dados:
 Localizando arquivos de entrada (Binários vindo do backend)
 
 Rodar container coisarada
+
 ---
 
-## Referências/Links/Nota final
+## Referências/Links/Nota final/Dados utilizados e gerados
 
 dalek

@@ -1,0 +1,8 @@
+
+services:
+  threejs-app:
+    build: .
+    container_name: threejs-dataviz
+    ports:
+      - "8084:80"
+    restart: unless-stopped
