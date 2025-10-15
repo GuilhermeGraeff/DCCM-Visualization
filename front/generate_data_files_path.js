@@ -43,7 +43,7 @@ try {
 
             for (const replicaFile of replicaFiles) {
 
-                const webPath = `../../data/${simFolder}/${replicaFolder}/${replicaFile}`;
+                const webPath = `/data/${simFolder}/${replicaFolder}/${replicaFile}`;
                 simulationData[simFolder][replicaFolder][replicaFile] = webPath;
             }
         }

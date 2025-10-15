@@ -34,7 +34,7 @@ class DccmSlice {
 
             this.dccmData = dccmData;
             const fontLoader = new FontLoader();
-            fontLoader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json', (font) => {
+            fontLoader.load('/fonts/droid_serif_regular.typeface.json', (font) => {
 
                 for (let i = 0; i < dccmData.numSlices; i++) {
                     const sliceMatrix = dccmData.getSliceAsMatrix(i);
