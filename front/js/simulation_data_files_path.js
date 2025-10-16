@@ -3,282 +3,132 @@
 const simulationData = {
     "asp294his": {
         "Rep_1": {
-            "dccm_data_25.bin": "/data/asp294his/Rep_1/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his/Rep_1/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his/Rep_1/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his/Rep_1/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his/Rep_1/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his/Rep_1/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his/Rep_1/dccm_data_1600.bin"
         },
         "Rep_2": {
-            "dccm_data_25.bin": "/data/asp294his/Rep_2/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his/Rep_2/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his/Rep_2/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his/Rep_2/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his/Rep_2/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his/Rep_2/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his/Rep_2/dccm_data_1600.bin"
         },
         "Rep_3": {
-            "dccm_data_25.bin": "/data/asp294his/Rep_3/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his/Rep_3/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his/Rep_3/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his/Rep_3/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his/Rep_3/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his/Rep_3/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his/Rep_3/dccm_data_1600.bin"
         },
         "Rep_4": {
-            "dccm_data_25.bin": "/data/asp294his/Rep_4/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his/Rep_4/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his/Rep_4/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his/Rep_4/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his/Rep_4/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his/Rep_4/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his/Rep_4/dccm_data_1600.bin"
         },
         "Rep_5": {
-            "dccm_data_25.bin": "/data/asp294his/Rep_5/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his/Rep_5/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his/Rep_5/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his/Rep_5/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his/Rep_5/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his/Rep_5/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his/Rep_5/dccm_data_1600.bin"
         }
     },
     "asp294his_lig": {
         "Rep_1": {
-            "dccm_data_25.bin": "/data/asp294his_lig/Rep_1/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his_lig/Rep_1/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his_lig/Rep_1/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his_lig/Rep_1/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his_lig/Rep_1/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his_lig/Rep_1/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his_lig/Rep_1/dccm_data_1600.bin"
         },
         "Rep_2": {
-            "dccm_data_25.bin": "/data/asp294his_lig/Rep_2/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his_lig/Rep_2/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his_lig/Rep_2/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his_lig/Rep_2/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his_lig/Rep_2/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his_lig/Rep_2/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his_lig/Rep_2/dccm_data_1600.bin"
         },
         "Rep_3": {
-            "dccm_data_25.bin": "/data/asp294his_lig/Rep_3/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his_lig/Rep_3/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his_lig/Rep_3/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his_lig/Rep_3/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his_lig/Rep_3/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his_lig/Rep_3/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his_lig/Rep_3/dccm_data_1600.bin"
         },
         "Rep_4": {
-            "dccm_data_25.bin": "/data/asp294his_lig/Rep_4/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his_lig/Rep_4/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his_lig/Rep_4/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his_lig/Rep_4/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his_lig/Rep_4/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his_lig/Rep_4/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his_lig/Rep_4/dccm_data_1600.bin"
         },
         "Rep_5": {
-            "dccm_data_25.bin": "/data/asp294his_lig/Rep_5/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp294his_lig/Rep_5/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp294his_lig/Rep_5/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp294his_lig/Rep_5/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp294his_lig/Rep_5/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp294his_lig/Rep_5/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp294his_lig/Rep_5/dccm_data_1600.bin"
         }
     },
     "asp84glu": {
         "Rep_1": {
-            "dccm_data_25.bin": "/data/asp84glu/Rep_1/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu/Rep_1/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu/Rep_1/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu/Rep_1/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu/Rep_1/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu/Rep_1/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu/Rep_1/dccm_data_1600.bin"
         },
         "Rep_2": {
-            "dccm_data_25.bin": "/data/asp84glu/Rep_2/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu/Rep_2/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu/Rep_2/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu/Rep_2/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu/Rep_2/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu/Rep_2/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu/Rep_2/dccm_data_1600.bin"
         },
         "Rep_3": {
-            "dccm_data_25.bin": "/data/asp84glu/Rep_3/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu/Rep_3/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu/Rep_3/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu/Rep_3/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu/Rep_3/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu/Rep_3/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu/Rep_3/dccm_data_1600.bin"
         },
         "Rep_4": {
-            "dccm_data_25.bin": "/data/asp84glu/Rep_4/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu/Rep_4/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu/Rep_4/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu/Rep_4/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu/Rep_4/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu/Rep_4/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu/Rep_4/dccm_data_1600.bin"
         },
         "Rep_5": {
-            "dccm_data_25.bin": "/data/asp84glu/Rep_5/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu/Rep_5/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu/Rep_5/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu/Rep_5/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu/Rep_5/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu/Rep_5/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu/Rep_5/dccm_data_1600.bin"
         }
     },
     "asp84glu_lig": {
         "Rep_1": {
-            "dccm_data_25.bin": "/data/asp84glu_lig/Rep_1/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu_lig/Rep_1/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu_lig/Rep_1/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu_lig/Rep_1/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu_lig/Rep_1/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu_lig/Rep_1/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu_lig/Rep_1/dccm_data_1600.bin"
         },
         "Rep_2": {
-            "dccm_data_25.bin": "/data/asp84glu_lig/Rep_2/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu_lig/Rep_2/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu_lig/Rep_2/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu_lig/Rep_2/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu_lig/Rep_2/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu_lig/Rep_2/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu_lig/Rep_2/dccm_data_1600.bin"
         },
         "Rep_3": {
-            "dccm_data_25.bin": "/data/asp84glu_lig/Rep_3/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu_lig/Rep_3/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu_lig/Rep_3/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu_lig/Rep_3/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu_lig/Rep_3/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu_lig/Rep_3/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu_lig/Rep_3/dccm_data_1600.bin"
         },
         "Rep_4": {
-            "dccm_data_25.bin": "/data/asp84glu_lig/Rep_4/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu_lig/Rep_4/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu_lig/Rep_4/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu_lig/Rep_4/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu_lig/Rep_4/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu_lig/Rep_4/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu_lig/Rep_4/dccm_data_1600.bin"
         },
         "Rep_5": {
-            "dccm_data_25.bin": "/data/asp84glu_lig/Rep_5/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/asp84glu_lig/Rep_5/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/asp84glu_lig/Rep_5/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/asp84glu_lig/Rep_5/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/asp84glu_lig/Rep_5/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/asp84glu_lig/Rep_5/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/asp84glu_lig/Rep_5/dccm_data_1600.bin"
         }
     },
     "wt": {
         "Rep_1": {
-            "dccm_data_25.bin": "/data/wt/Rep_1/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt/Rep_1/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt/Rep_1/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt/Rep_1/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt/Rep_1/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt/Rep_1/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt/Rep_1/dccm_data_1600.bin"
         },
         "Rep_2": {
-            "dccm_data_25.bin": "/data/wt/Rep_2/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt/Rep_2/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt/Rep_2/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt/Rep_2/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt/Rep_2/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt/Rep_2/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt/Rep_2/dccm_data_1600.bin"
         },
         "Rep_3": {
-            "dccm_data_25.bin": "/data/wt/Rep_3/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt/Rep_3/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt/Rep_3/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt/Rep_3/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt/Rep_3/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt/Rep_3/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt/Rep_3/dccm_data_1600.bin"
         },
         "Rep_4": {
-            "dccm_data_25.bin": "/data/wt/Rep_4/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt/Rep_4/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt/Rep_4/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt/Rep_4/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt/Rep_4/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt/Rep_4/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt/Rep_4/dccm_data_1600.bin"
         },
         "Rep_5": {
-            "dccm_data_25.bin": "/data/wt/Rep_5/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt/Rep_5/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt/Rep_5/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt/Rep_5/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt/Rep_5/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt/Rep_5/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt/Rep_5/dccm_data_1600.bin"
         }
     },
     "wt_lig": {
         "Rep_1": {
-            "dccm_data_25.bin": "/data/wt_lig/Rep_1/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt_lig/Rep_1/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt_lig/Rep_1/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt_lig/Rep_1/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt_lig/Rep_1/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt_lig/Rep_1/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt_lig/Rep_1/dccm_data_1600.bin"
         },
         "Rep_2": {
-            "dccm_data_25.bin": "/data/wt_lig/Rep_2/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt_lig/Rep_2/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt_lig/Rep_2/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt_lig/Rep_2/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt_lig/Rep_2/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt_lig/Rep_2/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt_lig/Rep_2/dccm_data_1600.bin"
         },
         "Rep_3": {
-            "dccm_data_25.bin": "/data/wt_lig/Rep_3/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt_lig/Rep_3/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt_lig/Rep_3/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt_lig/Rep_3/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt_lig/Rep_3/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt_lig/Rep_3/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt_lig/Rep_3/dccm_data_1600.bin"
         },
         "Rep_4": {
-            "dccm_data_25.bin": "/data/wt_lig/Rep_4/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt_lig/Rep_4/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt_lig/Rep_4/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt_lig/Rep_4/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt_lig/Rep_4/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt_lig/Rep_4/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt_lig/Rep_4/dccm_data_1600.bin"
         },
         "Rep_5": {
-            "dccm_data_25.bin": "/data/wt_lig/Rep_5/dccm_data_25.bin",
-            "dccm_data_50.bin": "/data/wt_lig/Rep_5/dccm_data_50.bin",
-            "dccm_data_100.bin": "/data/wt_lig/Rep_5/dccm_data_100.bin",
-            "dccm_data_200.bin": "/data/wt_lig/Rep_5/dccm_data_200.bin",
-            "dccm_data_400.bin": "/data/wt_lig/Rep_5/dccm_data_400.bin",
             "dccm_data_800.bin": "/data/wt_lig/Rep_5/dccm_data_800.bin",
             "dccm_data_1600.bin": "/data/wt_lig/Rep_5/dccm_data_1600.bin"
         }
