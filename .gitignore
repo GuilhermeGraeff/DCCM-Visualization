@@ -1,0 +1,9 @@
+back/
+
+front/dist/*
+front/public/data/*/*/dccm_data_25.bin
+front/public/data/*/*/dccm_data_50.bin
+front/public/data/*/*/dccm_data_100.bin
+front/public/data/*/*/dccm_data_200.bin
+front/public/data/*/*/dccm_data_400.bin
+
