@@ -1,6 +1,11 @@
 
 services:
   threejs-app:
+    deploy:
+      resources:
+        limits:
+          cpus: '1' 
+          memory: 32G 
     build: .
     container_name: threejs-dataviz
     ports:

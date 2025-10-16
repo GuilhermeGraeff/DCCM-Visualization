@@ -82,3 +82,7 @@ body {
     font-size: 0.9em;
     opacity: 0.7;
 }
+
+.welcome-content .github {
+    color:#a7dde9;
+}

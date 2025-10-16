@@ -1,13 +1,16 @@
 /*
 
-Este script e responsável por mapear os arquivos binários referentes às simulações, localiza sistemas, réplicas e diferentes tamanhos de fatias do método
-Ele é rodado de forma manual utilizando o node ('node generate_data_files_path.js'), este deve ser rodado após a obtenção dos dados que é tarefa do 'back'.
+Este script e responsável por mapear os arquivos binários referentes às simulações, 
+localiza sistemas, réplicas e diferentes tamanhos de fatias do método
+
+Ele é rodado de forma manual utilizando o node ('node generate_data_files_path.js'), 
+este deve ser rodado após a obtenção dos dados que é tarefa do 'back'.
 
 */
 const fs = require('fs');
 const path = require('path');
 
-const dataDir = path.join(__dirname, 'data'); 
+const dataDir = path.join(__dirname, 'public/data'); 
 const outputFilePath = path.join(__dirname, 'js', 'simulation_data_files_path.js'); 
 
 const simulationData = {};
@@ -20,11 +23,12 @@ const extractNumber = (filename) => {
 
 
 try {
-
+    // Localizar e filtrar as pastas* dos sistemas na pasta de dados
     const simulationFolders = fs.readdirSync(dataDir, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
         .map(dirent => dirent.name);
 
+    // Para cada pasta* simulação
     for (const simFolder of simulationFolders) {
         const dataDirReplica = path.join(dataDir, simFolder);
         const replicaFolders = fs.readdirSync(dataDirReplica, { withFileTypes: true })
@@ -33,6 +37,7 @@ try {
 
         simulationData[simFolder] = {};
 
+        // Para cada pasta* de réplica
         for (const replicaFolder of replicaFolders) {
             const replicaPath = path.join(dataDirReplica, replicaFolder);
             
@@ -41,15 +46,15 @@ try {
 
             simulationData[simFolder][replicaFolder] = {};
 
+            // Escreve neste dicionário os caminhos utilizado para armazenar os arquivos binários
             for (const replicaFile of replicaFiles) {
-
                 const webPath = `/data/${simFolder}/${replicaFolder}/${replicaFile}`;
                 simulationData[simFolder][replicaFolder][replicaFile] = webPath;
             }
         }
     }
 
-
+    // Reorganiza o dicionário para manter a ordem crescente de tamanho de fatia
     for (const systemKey in simulationData) {
         const replicas = simulationData[systemKey];
 

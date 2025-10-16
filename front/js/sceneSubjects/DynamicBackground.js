@@ -1,6 +1,7 @@
 /* 
 
-Aqui está a construção do plano branco presente nas faces da visualização, dinâmica conforme o número de frames/resíduos da simulação
+Aqui está a construção do plano branco presente nas faces da visualização, dinâmica conforme o 
+número de frames/resíduos da simulação
 
 */
 
@@ -8,31 +9,24 @@ import * as THREE from 'three';
 
 class DynamicBackground {
     constructor(scene) {
-        this.top = this.createPlane(new THREE.Color(0xe0e0e0)); // Top plane (floor)
-        this.left = this.createPlane(new THREE.Color(0xe0e0e0)); // Left wall
-        this.right = this.createPlane(new THREE.Color(0xe0e0e0)); // Right wall
-        this.back = this.createPlane(new THREE.Color(0xe0e0e0)); // Back wall
-        this.bottom = this.createPlane(new THREE.Color(0xe0e0e0)); // bottom wall
+        this.top = this.createPlane(); 
+        this.left = this.createPlane();
+        this.right = this.createPlane();
+        this.back = this.createPlane();
+        this.bottom = this.createPlane();
 
-        // --- Correct Initial Orientations ---
-        // Top plane (floor) is rotated to be flat on the XZ plane.
-        
-
-        // Side walls are rotated 90 degrees around the Y axis to stand up.
+        // Corrige o ângulo de cada plano que necessita de correção
         this.left.rotation.y = Math.PI / 2;
         this.right.rotation.y = -Math.PI / 2;
         this.top.rotation.x = -Math.PI / 2;
-
         this.bottom.rotation.x = -Math.PI / 2;
 
-        // The back wall needs no rotation.
 
         scene.add(this.top, this.left, this.right, this.back, this.bottom);
     }
 
-    createPlane(planeColor){
+    createPlane(){
         const geometry = new THREE.PlaneGeometry(1, 1); // Start with a 1x1 plane
-
 
         const uniforms = {
             centerColor: { value: new THREE.Color(0xffffff) },
@@ -40,6 +34,8 @@ class DynamicBackground {
             fadeStart: { value: 0.995 },
             fadeEnd: { value:  0.995 }
         };
+        
+        // Shader responsável pela criação das bordas nos planos
         const material = new THREE.ShaderMaterial({
             uniforms: uniforms,
             vertexShader: `
@@ -61,16 +57,13 @@ class DynamicBackground {
                     // Normalizamos para que o centro seja 0.0 e a borda seja 0.5
                     vec2 distToCenter = abs(vUv - vec2(0.5));
                     
-                    // Pegamos a maior distância (horizontal ou vertical) para lidar com as bordas em todos os lados
+                    // Maior distância do centro, lidar com as bordas em todos os lados
                     float maxDist = max(distToCenter.x, distToCenter.y);
                     
-                    // Normaliza maxDist de 0.0 (centro) a 0.5 (borda) para 0.0 a 1.0 para o smoothstep
+                    // Normaliza maxDist de 0.0 (centro) a 0.5 (borda) para 0.0 a 1.0
                     float normalizedDist = maxDist * 2.0;
 
-                    // Usa smoothstep para criar uma transição suave.
-                    // fadeStart e fadeEnd são relativos à distância do centro (0.0 a 0.5).
-                    // Convertemos para que 0.0 seja o centro e 1.0 seja a borda (multiplicando por 2)
-                    // fadeFactor será 1.0 no centro, 0.0 nas bordas, e suavemente transacionará no meio.
+                    // Reliza uma transição suave das cores selecionadas
                     float fadeFactor = 1.0 - smoothstep(fadeStart, fadeEnd, normalizedDist);
 
                     // Mistura as cores: se fadeFactor é 1.0, usa centerColor; se 0.0, usa edgeColor.
@@ -82,29 +75,25 @@ class DynamicBackground {
 
         
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.visible = false; // Start hidden until dimensions are set
+        mesh.visible = false;
         return mesh;
     }
     
     updateDimensions(numResidues, numSlices) {
-        // These calculations appear to be from your original code.
+        // Esta função atualiza as dimensões do plano, possui alguns valores brutos que são responsáveis por ajustes de tamanho
         const plane_width = 0.096 * numResidues;
         const plane_depth = (0.0985 * numSlices) + 1.8;
         
-        // Center the planes
+        // Centraliza os planos
         const centerX = plane_width / 2;
         const centerZ = -plane_depth / 2;
         const wallHeight = numResidues * 0.093;
 
-        // --- Update Top (Floor) Plane ---
+        // Top Wall
         this.top.scale.set(plane_width, plane_depth, 1);
         this.top.position.set(centerX, wallHeight, centerZ);
         this.top.visible = true;
         this.top.material.side = THREE.BackSide;
-
-        
-        // --- Update Side Walls ---
-        // Assume a fixed height for the walls, e.g., 20 units.
 
         // Left Wall
         this.left.scale.set(plane_depth, wallHeight, 1);
@@ -145,11 +134,10 @@ class DynamicBackground {
     }
 
     update(time) {
-        console.log('DynamicBackground updated')
+        console.log('DynamicBackground updated');
     }
 
     dispose(scene) {
-        // Helper to dispose of a single mesh
         const disposeMesh = (mesh) => {
             if (mesh) {
                 mesh.geometry.dispose();

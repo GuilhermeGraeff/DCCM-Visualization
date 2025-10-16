@@ -39,8 +39,6 @@ function AxisMark(scene) {
 	
 	this.update = function(time) {
 		const scale = Math.sin(time)+2;
-
-		// mesh.scale.set(scale, scale, scale);
 	}
 }
 

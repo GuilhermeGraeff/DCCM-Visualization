@@ -1,3 +1,12 @@
+/* 
+
+Aqui está a construção de uma fatia de correlação da visualização, 
+cada fatia é gerada separadamente, permitindo a navegação dos dados 
+através do 'selected slice'
+
+*/
+
+
 import * as THREE from 'three'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
@@ -7,6 +16,7 @@ import DccmFunctions from '../funcionalities/DccmFunctions'
 class DccmSlice {
 	constructor(scene, initialSettings, correlation_file_path, dynamicBackground, onDataLoadedCallback) {
 
+        // Inicializa as propriedades necessárias para o funcionamento da classe
         this.dccmTools = new DccmFunctions();
         this.parentObject = new THREE.Object3D();
         this.slicePoints = []; 
@@ -14,16 +24,17 @@ class DccmSlice {
         this.dccmData = null;
         this.isInitialized = false;
 		this.dynamicBackground = dynamicBackground;
-
         this.onDataLoaded = onDataLoadedCallback;
 
         this._initialize(scene, initialSettings, correlation_file_path);
     }
 
+    // Esta função carrega os dados, constrói os pontos e desenha o texto referente aos resíduos e também à fatia
 	async _initialize(scene, settings, dataUrl) {
         try {
             const dccmData = await this.dccmTools.loadBinaryDCCM(dataUrl);
 			
+            // Atualiza a dimensão da visualização conforme o número de fatias/resíudos
             if (this.onDataLoaded) {
                 this.onDataLoaded(dccmData.numSlices);
             }
@@ -36,15 +47,14 @@ class DccmSlice {
             const fontLoader = new FontLoader();
             fontLoader.load('/fonts/droid_serif_regular.typeface.json', (font) => {
 
+                // Desenha os pontos e também escreve o texto(label) referente à fatia atual
                 for (let i = 0; i < dccmData.numSlices; i++) {
                     const sliceMatrix = dccmData.getSliceAsMatrix(i);
-
                     const [geometry, material, pointData] = this.dccmTools.createParticleSlice(
                         sliceMatrix, 1, 0.05, (-1) - (i * 0.1), 0.09, 0.022, 
                         settings['modify negative threshold'], 
                         settings['modify positive threshold']
                     );
-                    
                     const points = new THREE.Points(geometry, material);
 
                     const textGeometry = new TextGeometry(`Slice ${i}`, {
@@ -66,6 +76,7 @@ class DccmSlice {
                     this.textMeshes.push(textMesh);
                 }
 
+                // Escreve o texto(label) referente ao resíduo 
 				for (let i = 0; i < dccmData.numAtoms; i++) {
                     const textGeometry = new TextGeometry(dccmData.residueNames[(dccmData.numAtoms-1) - i], {
                         depth: 0.00000001, size: 0.055, font: font
@@ -94,6 +105,7 @@ class DccmSlice {
         }
     }
 
+    // Após inicializado, atualiza os dados conforme a simulação selecionada, assim como atualiza a visualização conforme as configurações selecionadas
 	updateFromSettings(settings) {
         if (!this.isInitialized) return;
         if (this.dynamicBackground) {
@@ -107,7 +119,7 @@ class DccmSlice {
         this.slicePoints.forEach(slice => {
             const { points, sliceIndex, sliceMatrix } = slice;
 
-    
+            // Visualiza apenas a fatia selecionada, se == -1 então visualiza todas as fatias
             const isSelected = sliceIndex === selected_slice;
             if (selected_slice !== -1 && !isSelected && !display_unselected_layers) {
                 points.visible = false;
@@ -117,7 +129,8 @@ class DccmSlice {
                 this.textMeshes[sliceIndex].visible = true;
             }
 
-            points.material.size = (selected_slice === -1 || isSelected) ? 0.16 : 0.022;
+            // Diminui o tamanho dos pontos ds fatias não selecionadas
+            points.material.size = (selected_slice === -1 || isSelected) ? 0.16 : 0.075;
 
             const positions = [];
             const colors = [];
@@ -125,17 +138,18 @@ class DccmSlice {
             const step_length = 0.09;
             const pos_x = 1, pos_y = 0.05, pos_z = (-1) - (sliceIndex * 0.1);
 
-            for (let residue = 0; residue < sliceMatrix.length; residue++) {
-                for (let j = 0; j < sliceMatrix[residue].length; j++) {
-                    const value = sliceMatrix[residue][j];
+            // Filtra os pontos(correlações e anti-correlações) pelos limites definidos na configuração
+            for (let i = 0; i < sliceMatrix.length; i++) {
+                for (let j = 0; j < sliceMatrix[i].length; j++) {
+                    const value = sliceMatrix[i][j];
                     if (value > -negative_treshold && value < positive_treshold) {
                         continue;
                     }
-                    positions.push(pos_x + (residue * step_length), pos_y + (j * step_length), pos_z);
+                    positions.push(pos_x + (i * step_length), pos_y + (j * step_length), pos_z);
                     const color_gradient = this.dccmTools.gradientColorForCorrelationForParticles(value);
                     colors.push(color_gradient[0] / 255.0, color_gradient[1] / 255.0, color_gradient[2] / 255.0);
                     newPointData.push({
-                        residueI: residue,
+                        residueI: i,
                         residueJ: j,
                         value: value.toFixed(4)
                     });
@@ -152,6 +166,7 @@ class DccmSlice {
         });
     }
 
+    // Descarta os pontos
 	dispose(scene) {
         if (!this.isInitialized) return;
         

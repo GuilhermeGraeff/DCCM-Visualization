@@ -1,3 +1,10 @@
+/* 
+
+Funções relacionadas ao tratamento de do DCCM, carregar o arquivo binário, atribuir a cor correta aos pontos
+
+*/
+
+
 import * as THREE from 'three'
 import {Text} from 'troika-three-text'
 
@@ -5,22 +12,25 @@ class DccmFunctions {
 
     async loadBinaryDCCM(url) {
         const response = await fetch(url);
+
+        // Leitura do arquivo binário para a extração das informações necessárias
         if (!response.ok) {
             throw new Error(`Erro de HTTP ao carregar ${url}: ${response.status}`);
         }
         const arrayBuffer = await response.arrayBuffer();
 
-
+        // Captura o header do binário
         const headerView = new DataView(arrayBuffer, 0, 12);
         const numSlices = headerView.getUint32(0, true);
         const numAtoms = headerView.getUint32(4, true);
         const dataTypeId = headerView.getUint32(8, true);
 
-        const namesOffset = 12; // Tamanho cabeçalho
-        const namesBlockSize = numAtoms * 4; // Nome dos resíduos
+        const namesOffset = 12; 
+        const namesBlockSize = numAtoms * 4;
         const residueNames = [];
         const textDecoder = new TextDecoder('utf-8');
 
+        // Captura o nome dos reíduos
         for (let i = 0; i < numAtoms; i++) {
             const start = namesOffset + (i * 4);
             
@@ -32,15 +42,15 @@ class DccmFunctions {
 
         const dataOffset = namesOffset + namesBlockSize;
 
+
         let rawData;
-        if (dataTypeId === 1) { // float32
+        if (dataTypeId === 1) {
             rawData = new Float32Array(arrayBuffer, dataOffset);
         } else {
             throw new Error(`Tipo de dado não suportado: ${dataTypeId}`);
         }
 
         const numElementsPerSlice = (numAtoms * (numAtoms + 1)) / 2;
-
 
         const getDCCMValue = (sliceIndex, i, j) => {
             if (i > j) {
@@ -53,6 +63,7 @@ class DccmFunctions {
             return rawData[sliceOffset + indexInTriangle];
         };
 
+        // Retorna uma matriz quadrada com os dados 
         const getSliceAsMatrix = (sliceIndex) => {
             const matrix = Array(numAtoms).fill(0).map(() => Array(numAtoms).fill(0));
             for (let i = 0; i < numAtoms; i++) {
@@ -64,7 +75,8 @@ class DccmFunctions {
             }
             return matrix;
         };
-        
+
+        // Retorna informações necessárias
         return {
             numSlices,
             numAtoms,
@@ -75,6 +87,7 @@ class DccmFunctions {
         };
     }
 
+    // Teste com números aleatórios na matriz de correlação
     createRandomDCCM( size ) {
         var random_DCCM_columns = new Array();
         for (var i = 0; i < size; i++) {
@@ -87,6 +100,7 @@ class DccmFunctions {
         return random_DCCM_columns
     }
 
+    // Cria pontos da fatia, utilizando um BufferGeometry
     createParticleSlice( slice, pos_x, pos_y, pos_z, step_length, particle_size, negative_treshold, positive_treshold ) {
         const particle_geometry = new THREE.BufferGeometry();
         
@@ -94,26 +108,25 @@ class DccmFunctions {
         const colors = [];
         const pointData = []; 
 
-        for (var residue = 0; residue < slice.length; residue++) {
-            for (var j = 0; j < slice[residue].length; j++) {
-                if ((slice[residue][j] > -negative_treshold && (slice[residue][j] < positive_treshold))) {
+        for (var i = 0; i < slice.length; i++) {
+            for (var j = 0; j < slice[i].length; j++) {
+                if ((slice[i][j] > -negative_treshold && (slice[i][j] < positive_treshold))) {
                     continue
                 }
-                positions.push( pos_x+(residue*step_length), pos_y+(j*step_length), pos_z );
-                var color_gradient = this.gradientColorForCorrelationForParticles(slice[residue][j])
+                positions.push( pos_x+(i*step_length), pos_y+(j*step_length), pos_z );
+                var color_gradient = this.gradientColorForCorrelationForParticles(slice[i][j])
                 colors.push( color_gradient[0]/255.0, color_gradient[1]/255.0, color_gradient[2]/255.0)
                 pointData.push({
-                    residueI: residue,
+                    residueI: i,
                     residueJ: j,
-                    value: slice[residue][j].toFixed(4) // Arredonda para 4 casas decimais
+                    value: slice[i][j].toFixed(4)
                 });
             }
         }
         
-        
+        // Através das posições e cores cria a geometria e cores para os pontosdos pontos 
         particle_geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
         particle_geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-        
         particle_geometry.computeBoundingSphere();
         
         const particle_material = new THREE.PointsMaterial( { size: particle_size, vertexColors: true } );
@@ -121,6 +134,7 @@ class DccmFunctions {
         return [particle_geometry, particle_material, pointData]
     }
 
+    // Converte o valor normalizado para um gradiente do azul (1 negativo) até o vermelho (1 positivo)
     gradientColorForCorrelationForParticles(value) {
         const blue = { r: 0, g: 0, b: 255 };
         const white = { r: 255, g: 255, b: 255 };
