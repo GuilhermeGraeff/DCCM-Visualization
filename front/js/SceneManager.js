@@ -169,7 +169,7 @@ function SceneManager() {
         const replicaNames = Object.keys(simulationData[initialSim]);
         const initialRep = replicaNames[0];
         const fileNames = Object.keys(simulationData[initialSim][initialRep]);
-        const initialFile = fileNames[0];
+        const initialFile = fileNames[fileNames.length-1];
 
         settings = {
             'modify positive threshold': 0.4,
