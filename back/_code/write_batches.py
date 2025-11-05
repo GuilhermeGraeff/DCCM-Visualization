@@ -2,16 +2,18 @@ sistemas  = ['wt', 'wt_lig', 'asp84glu', 'asp84glu_lig', 'asp294his', 'asp294his
 
 replicas=['1', '2', '3', '4', '5']
 
+path = "/home/ggraeff/workspace/dccm/dados"
+
 for sistema in sistemas: 
     for replica in replicas:
-        data_path = f'/home/ggraeff/workspace/dccm/dados'
-        file_path = f'/home/ggraeff/workspace/dccm/dados/{sistema}/Rep_{replica}'
+        data_path = path
+        file_path = f'{path}/{sistema}/Rep_{replica}'
         cabecalho = f'''#!/bin/bash
 #SBATCH -n 1
 #SBATCH -p fila4
 #SBATCH
 source /opt/apps/gromacs20250/bin/GMXRC
-WORKDIR={file_path}
+WORKDIR={file_path} 
 cd $WORKDIR
 
 echo -e "1 & 3 \\nq" | gmx make_ndx -n {data_path}/{sistema}/Rep_{replica}/index_novo.ndx
