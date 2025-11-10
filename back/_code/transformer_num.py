@@ -141,22 +141,18 @@ class Algorithms:
         
         fluctuations = coords - mean_coords
 
-        # 4. Remodelar a matriz de flutuações para o produto de matrizes
-        # Achatamos as dimensões de átomos e coordenadas numa única dimensão.
         # A forma passa de (N_frames, N_atoms, 3) para (N_frames, N_atoms * 3)
         fluctuations_reshaped = fluctuations.reshape(n_frames, n_atoms * 3)
         
-        # 5. Calcular a matriz de covariância
-        # Este é o passo computacionalmente mais intensivo.
+        # Calcular a matriz de covariância
         # (N_atoms*3, N_frames) @ (N_frames, N_atoms*3) -> (N_atoms*3, N_atoms*3)
         cov_matrix = np.dot(fluctuations_reshaped.T, fluctuations_reshaped) / n_frames
     
-        # 6. Normalizar a matriz de covariância para obter a matriz DCC
+        # Normalizar a matriz de covariância para obter a matriz DCC
         # Extrair a diagonal (variâncias)
         diag = np.diag(cov_matrix)
         
-        # Adicionar um pequeno epsilon para evitar a divisão por zero no caso de variância nula
-        # embora seja raro em simulações reais.
+        # Adicionar um pequeno valor para evitar a divisão por zero no caso de variância nula
         diag_sqrt = np.sqrt(diag + 1e-10)
 
     
@@ -178,41 +174,40 @@ class Algorithms:
         # Assure datatype
         coords = np.asarray(traj_slice, dtype=np.float32)
 
-        # Calculate the mean position for each atom (n_atoms, 3)
+        # Calcular posição média
         mean_coords = np.mean(coords, axis=0) 
 
-        # Calculate the vector for the fluctuations from it's own mean
+        # Calcular flutuaçãos a partir da média
         # (n_frames, n_atoms, 3) - (n_atoms, 3) -> (n_frames, n_atoms, 3)
         fluctuations = coords - mean_coords
 
-        # Calculate the covariance matrix for the atoms, using dot product (scalar product)
-        # The dot product of the fluctuation vectors
-        # Using cp.einsum:
+        # Calcular matriz de covariancia utilziando o produto escalar
+        # Produto escalar utilizando os vetores de flutuação:
+        # np.einsum:
         # 'tij, tkj -> ik':
-        # - For each atom (i,k)
-        # - Some (Σ) sobre os frames (t) e sobre as coordenadas (j)...
-        # - The product of fluctuation[t, i, j] * fluctuation[t, k, j]
-        # That is: C_ik = <Δr_i ⋅ Δr_k>
+        #    Para cada átomo(i,k)
+        #    Some (Σ) sobre os frames (t) e sobre as coordenadas (j)...
+        #    O produto de fluctuation[t, i, j] * fluctuation[t, k, j]
+        # Isto é: C_ik = <Δr_i ⋅ Δr_k>
         cov_matrix = np.einsum('tij,tkj->ik', fluctuations, fluctuations) / n_frames
         
-        # Normalize covariance to get the DCCM (dividing by the variances)
-        # The diagonal has the variance for the atom
+        # Normalizar covariância/dividir pela variância
         diag = np.diag(cov_matrix)
 
-        # Add a realy small number, to get rid of 0 division and get the square root
+        # Trata divisão por 0
         diag_sqrt = np.sqrt(diag + 1e-10)
         
-        # Normalization matrix for each element
+        # Normalizar matriz para cada elemento
         norm_matrix = np.outer(diag_sqrt, diag_sqrt)
         
-        # Normalize covariances
+        # Normalizar covariâncias
         dccm_matrix_cpu = cov_matrix / norm_matrix
 
 
         return dccm_matrix_cpu
 
     def plotAndSaveDCCM(self, dccm_matrix, output_path, slice_index):
-        # Save image for 
+        # Salvar imagem/gráfico/heatmap
         fig, ax = plt.subplots(figsize=(10, 8))
         cax = ax.imshow(dccm_matrix, cmap='seismic', vmin=-1, vmax=1)
         ax.set_title(f'Dynamic Cross-Correlation Map (DCCM) - Slice {slice_index}')
@@ -223,7 +218,7 @@ class Algorithms:
         plt.close(fig)
 
     def writeNakedArrayCovariances(self, covariances, file_path):
-        # Archaic Method to save the matrix as a .js 
+        # Deprecated: Salva array de maneira 'bruta'
         with open(file_path, "w") as txt_file:
             txt_file.write("[")
             for frame in range(0, len(covariances), 1):
