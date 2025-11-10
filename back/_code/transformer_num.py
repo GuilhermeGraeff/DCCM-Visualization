@@ -194,7 +194,7 @@ class Algorithms:
         # Normalizar covariância/dividir pela variância
         diag = np.diag(cov_matrix)
 
-        # Trata divisão por 0
+        # Trata divisão por 0 e tira a raiz quadrada
         diag_sqrt = np.sqrt(diag + 1e-10)
         
         # Normalizar matriz para cada elemento
