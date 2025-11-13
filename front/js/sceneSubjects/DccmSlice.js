@@ -45,7 +45,7 @@ class DccmSlice {
 
             this.dccmData = dccmData;
             const fontLoader = new FontLoader();
-            fontLoader.load('/fonts/droid_serif_regular.typeface.json', (font) => {
+            fontLoader.load('fonts/droid_serif_regular.typeface.json', (font) => {
 
                 // Desenha os pontos e também escreve o texto(label) referente à fatia atual
                 for (let i = 0; i < dccmData.numSlices; i++) {
