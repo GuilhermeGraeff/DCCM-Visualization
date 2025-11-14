@@ -48,7 +48,7 @@ try {
 
             // Escreve neste dicionário os caminhos utilizado para armazenar os arquivos binários
             for (const replicaFile of replicaFiles) {
-                const webPath = `/data/${simFolder}/${replicaFolder}/${replicaFile}`;
+                const webPath = `data/${simFolder}/${replicaFolder}/${replicaFile}`;
                 simulationData[simFolder][replicaFolder][replicaFile] = webPath;
             }
         }
