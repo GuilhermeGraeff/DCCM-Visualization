@@ -7,6 +7,7 @@ Também instancia a principal função presente no arquivo SceneManager.js
 que é responsável por gerenciar a cena 
 
 */
+import '../public/css/style.css'
 
 import SceneManager from './SceneManager.js'
 
