@@ -2,7 +2,9 @@ sistemas  = ['wt', 'wt_lig', 'asp84glu', 'asp84glu_lig', 'asp294his', 'asp294his
 
 replicas=['1', '2', '3', '4', '5']
 
-path = "/home/ggraeff/workspace/dccm/dados"
+
+
+path = "/path/to/your/system/data"
 
 for sistema in sistemas: 
     for replica in replicas:
