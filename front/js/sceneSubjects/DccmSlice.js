@@ -78,7 +78,7 @@ class DccmSlice {
 
                 // Escreve o texto(label) referente ao resíduo 
 				for (let i = 0; i < dccmData.numAtoms; i++) {
-                    const textGeometry = new TextGeometry(dccmData.residueNames[(dccmData.numAtoms-1) - i], {
+                    const textGeometry = new TextGeometry(dccmData.residueNames[(dccmData.numAtoms-1) - i] + ' ' + (dccmData.numAtoms - i), {
                         depth: 0.00000001, size: 0.055, font: font
                     });
                     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x303030 });

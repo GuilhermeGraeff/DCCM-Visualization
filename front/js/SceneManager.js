@@ -263,7 +263,7 @@ function SceneManager() {
                     tooltipDiv.innerHTML = `
                         Slice: ${sourceSlice.sliceIndex}<br>
                         Correlação: ${data.value}<br>
-                        Resíduos: ${resNames[data.residueI]} ↔ ${resNames[data.residueJ]}
+                        Resíduos: ${resNames[data.residueI]} ${data.residueI+1} ↔ ${resNames[data.residueJ]} ${data.residueJ+1}
                     `;
 
                     // Posiciona o tooltip um pouco acima do ponteiro do mouse
