@@ -60,7 +60,7 @@ function SceneManager() {
     let isBenchmarking = false;
     let benchmarkQueue = [];
     let currentTestIndex = 0;
-    const TEST_DURATION_MS = 20000;
+    const TEST_DURATION_MS = 15000;
 
     let fpsSamples = []; 
     let currentMetricSession = null;
@@ -194,7 +194,7 @@ function SceneManager() {
 
     function startAutomatedBenchmark() {
         benchmarkQueue = [];
-        const thresholds = [0.35, 0.5, 0.75];
+        const thresholds = [0.1, 0.3, 0.5, 0.7, 0.9];
         
         // 1. Monta a fila de testes percorrendo seu simulationData
         Object.keys(simulationData).forEach(sim => {
