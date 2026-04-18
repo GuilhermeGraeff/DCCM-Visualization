@@ -14,7 +14,7 @@ import DccmFunctions from '../funcionalities/DccmFunctions'
 
 
 class DccmSlice {
-	constructor(scene, initialSettings, correlation_file_path, dynamicBackground, onDataLoadedCallback) {
+	constructor(scene, initialSettings, correlation_file_path, dynamicBackground, onDataLoadedCallback, onPerformanceMeasured, onPointsCountUpdated) {
 
         // Inicializa as propriedades necessárias para o funcionamento da classe
         this.dccmTools = new DccmFunctions();
@@ -25,6 +25,9 @@ class DccmSlice {
         this.isInitialized = false;
 		this.dynamicBackground = dynamicBackground;
         this.onDataLoaded = onDataLoadedCallback;
+        this.onPerformanceMeasured = onPerformanceMeasured;
+        this.onPointsCountUpdated = onPointsCountUpdated;
+        this.filePath = correlation_file_path;
 
         this._initialize(scene, initialSettings, correlation_file_path);
     }
@@ -32,8 +35,14 @@ class DccmSlice {
     // Esta função carrega os dados, constrói os pontos e desenha o texto referente aos resíduos e também à fatia
 	async _initialize(scene, settings, dataUrl) {
         try {
+
+            const loadStart = performance.now();
+
             const dccmData = await this.dccmTools.loadBinaryDCCM(dataUrl);
 			
+            const loadEnd = performance.now();
+            const loadTimeMs = loadEnd - loadStart;
+
             // Atualiza a dimensão da visualização conforme o número de fatias/resíudos
             if (this.onDataLoaded) {
                 this.onDataLoaded(dccmData.numSlices);
@@ -45,6 +54,9 @@ class DccmSlice {
 
             this.dccmData = dccmData;
             const fontLoader = new FontLoader();
+
+            const renderStart = performance.now();
+
             fontLoader.load('fonts/droid_serif_regular.typeface.json', (font) => {
 
                 // Desenha os pontos e também escreve o texto(label) referente à fatia atual
@@ -98,7 +110,18 @@ class DccmSlice {
                 scene.add(this.parentObject);
                 this.isInitialized = true;
 
-                this.updateFromSettings(settings);
+                this.updateFromSettings(settings, true);
+
+                const renderEnd = performance.now();
+                const renderTimeMs = renderEnd - renderStart;
+
+                if (this.onPerformanceMeasured) {
+                    this.onPerformanceMeasured({
+                        filename: dataUrl.split('/').pop(),
+                        load_time_ms: dccmData.loadTimeMs.toFixed(2),
+                        render_time_ms: renderTimeMs.toFixed(2),
+                    });
+                }
             });
         } catch (error) {
             console.error("Failed to load or process DCCM data:", error);
@@ -106,8 +129,11 @@ class DccmSlice {
     }
 
     // Após inicializado, atualiza os dados conforme a simulação selecionada, assim como atualiza a visualização conforme as configurações selecionadas
-	updateFromSettings(settings) {
+	updateFromSettings(settings, isFirstRender = false) {
         if (!this.isInitialized) return;
+
+        const updateStart = performance.now();
+
         if (this.dynamicBackground) {
 			this.dynamicBackground.updateDimensions(this.dccmData.numAtoms, this.dccmData.numSlices);
 		}
@@ -115,6 +141,8 @@ class DccmSlice {
         const positive_treshold = settings['modify positive threshold'];
         const selected_slice = settings['selected slice'];
         const display_unselected_layers = settings['display unselected layers'];
+
+        let totalVisiblePoints = 0;
 
         this.slicePoints.forEach(slice => {
             const { points, sliceIndex, sliceMatrix } = slice;
@@ -157,6 +185,10 @@ class DccmSlice {
             }
             
             slice.pointData = newPointData;
+            
+            if (slice.points.visible) {
+                totalVisiblePoints += slice.pointData.length;
+            }
 
             points.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
             points.geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
@@ -164,6 +196,21 @@ class DccmSlice {
             points.geometry.attributes.color.needsUpdate = true;
             points.geometry.computeBoundingSphere();
         });
+
+        const updateEnd = performance.now();
+        const updateTimeMs = updateEnd - updateStart;
+
+        if (this.onPerformanceMeasured && !isFirstRender) {
+            this.onPerformanceMeasured({
+                filename: this.filePath ? this.filePath.split('/').pop() : "unknown",
+                load_time_ms: this.dccmData.loadTimeMs ? this.dccmData.loadTimeMs.toFixed(2) : "0.00",
+                render_time_ms: updateTimeMs.toFixed(2),
+            });
+        }
+
+        if (this.onPointsCountUpdated) {
+            this.onPointsCountUpdated(totalVisiblePoints);
+        }
     }
 
     // Descarta os pontos

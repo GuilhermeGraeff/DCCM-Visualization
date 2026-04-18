@@ -11,6 +11,8 @@ import {Text} from 'troika-three-text'
 class DccmFunctions {
 
     async loadBinaryDCCM(url) {
+
+        const startLoadTime = performance.now();
         const response = await fetch(url);
 
         // Leitura do arquivo binário para a extração das informações necessárias
@@ -76,6 +78,8 @@ class DccmFunctions {
             return matrix;
         };
 
+        const endLoadTime = performance.now();
+        const totalLoadTimeMs = endLoadTime - startLoadTime;
         // Retorna informações necessárias
         return {
             numSlices,
@@ -83,7 +87,8 @@ class DccmFunctions {
             residueNames,
             rawData,
             getDCCMValue,
-            getSliceAsMatrix
+            getSliceAsMatrix,
+            loadTimeMs: totalLoadTimeMs
         };
     }
 

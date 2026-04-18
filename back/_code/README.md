@@ -11,6 +11,7 @@ conda create -n mdtraj_py_31 -c conda-forge python=3.10 mdtraj cupy numpy
 ## Tratamento da tajetória para a extração dos C-alpha
 
 source /opt/apps/gromacs20250/bin/GMXRC
+source /usr/local/gromacs/bin/GMXRC
 
 Extraindo um novo index que contém apenas os C-alpha pertencentes a proteína da trajetória:
 echo -e "1 & 3 \nq" | gmx make_ndx -n index_novo.ndx

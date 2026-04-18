@@ -257,18 +257,18 @@ def main() -> int:
         folder_path = os.path.join(trajectory_data_path, folder)
 
         # Lista as réplicas presentes no sistema
-        if (folder == 'wt_lig'):
-            print('Entrou no', folder)
-            replicas = [r for r in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, r)) and r.startswith('Rep_')]
-            
-            for replica in sorted(replicas):
-                if replica == 'Rep_1':
-                    print('Entrou na replica', replica)
-                    replica_path = os.path.join(folder_path, replica)
+        # if (folder == 'wt_lig'):
+        print('Entrou no', folder)
+        replicas = [r for r in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, r)) and r.startswith('Rep_')]
+        
+        for replica in sorted(replicas):
+            if replica == 'Rep_1':
+                print('Entrou na replica', replica)
+                replica_path = os.path.join(folder_path, replica)
 
-                    # Aplica o algoritmo para cada sistema e réplica presente dos dados
-                    app.algs.processTrajectory(replica_path)
-                
+                # Aplica o algoritmo para cada sistema e réplica presente dos dados
+                app.algs.processTrajectory(replica_path)
+            
     return 0
 
 if __name__ == '__main__':
